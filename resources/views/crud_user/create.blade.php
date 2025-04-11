@@ -49,32 +49,32 @@
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Name</label>
-                        <input type="text" class="form-control" name="name" required autofocus>
+                        <input type="text" class="form-control" name="name" autofocus>
                         @error('name')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" class="form-control" name="email" required>
+                        <input type="email" class="form-control" name="email">
                         @error('email')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Phone</label>
-                        <input type="text" class="form-control" name="phone" required>
+                        <input type="text" class="form-control" name="phone">
                         @error('phone')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Address</label>
-                        <input type="text" class="form-control" name="address" required>
+                        <input type="text" class="form-control" name="address">
                         @error('address')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" required>
+                        <input type="password" class="form-control" name="password">
                         @error('password')<span class="text-danger">{{ $message }}</span>@enderror
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" name="password_confirmation" required>
+                        <input type="password" class="form-control" name="password_confirmation">
                     </div>
                     <button type="submit" class="btn btn-dark w-100">Sign Up</button>
                     <div class="text-center mt-3">

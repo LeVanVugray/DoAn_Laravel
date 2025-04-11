@@ -37,18 +37,27 @@ class CrudUserController extends Controller
     public function authUser(Request $request)
     {
         $request->validate([
-            'email' => 'required',
-            'password' => 'required',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+        ], [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'password.required' => 'Password is required.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
         ]);
-
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            return redirect()->route('index')
-                ->withSuccess('Signed in');
+    
+        if (!User::where('email', $request->email)->exists()) {
+            return redirect("login")->withErrors(['email' => 'Email not found.'])->withInput();
         }
-
-        return redirect("login")->withSuccess('Login details are not valid');
+    
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return redirect("login")->withErrors(['password' => 'Incorrect password.'])->withInput();
+        }
+    
+        return redirect()->route('index')->withSuccess('Signed in');
     }
 
     /**
@@ -67,19 +76,35 @@ class CrudUserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'phone' => 'required|string|max:15',
+            'password' => [
+                'required',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+            'phone' => 'required|numeric|digits_between:10,11',
             'address' => 'required|string|max:255',
+        ], [
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'email.unique' => 'Email already exists.',
+            'password.required' => 'Password is required.',
+            'password.confirmed' => 'Passwords do not match.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
+            'phone.required' => 'Phone number is required.',
+            'phone.numeric' => 'Phone must be a number.',
+            'phone.digits_between' => 'Phone must be between 10 and 11 digits.',
+            'address.required' => 'Address is required.',
         ]);
     
-        $check = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone' => $request->phone,
             'address' => $request->address,
         ]);
-
+    
         return redirect()->route('login')->withSuccess('You can now login');
     }
 

@@ -43,18 +43,19 @@
         <div class="auth-right">
             <div class="auth-card">
                 <h4 class="text-center mb-3">Login</h4>
+
                 <form method="POST" action="{{ route('user.authUser') }}">
                     @csrf
                     <div class="mb-3">
                         <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" required autofocus>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ old('email') }}" autofocus>
                         @if ($errors->has('email'))
                             <span class="text-danger">{{ $errors->first('email') }}</span>
                         @endif
                     </div>
                     <div class="mb-3">
                         <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
+                        <input type="password" class="form-control" id="password" name="password">
                         @if ($errors->has('password'))
                             <span class="text-danger">{{ $errors->first('password') }}</span>
                         @endif
