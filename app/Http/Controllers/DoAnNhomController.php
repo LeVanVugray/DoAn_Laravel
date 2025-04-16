@@ -64,4 +64,29 @@ class DoAnNhomController extends Controller
             'query' => $query
         ]);
     }
+
+
+    public function readUser(Request $request) {
+        $user_id = $request->get('user_id');
+        $item = CartItems::find($user_id);
+
+        return view('DoAn_NhomF.cart', ['item' => $item]);
+    }
+
+
+
+    public function deleteUser(Request $request) {
+        $cart_item_id = $request->get('cart_items_id');
+        $done = CartItems::destroy($cart_items_id);
+
+        return redirect("list");
+    }
+
+
+    public function phanTrangGioHang(Request $request) {
+        $userId = auth()->id();     
+        $cartItems = CartItems::where('user_id', $userId)->paginate(33);
+        return view('DoAn_NhomF.index', compact('products'));
+    }
+
 }
