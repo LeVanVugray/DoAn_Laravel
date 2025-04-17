@@ -80,13 +80,15 @@ class DoAnNhomController extends Controller
 
     public function layGioHang(Request $request) {
 
+        $currentPage = $request->query('page', 1);
+
         $userId = auth()->id();     
 
         $cartItems = DB::table('cart_items')
-        ->join('product', 'cart_items.product_id', '=', 'product.product_id')
-        ->select('cart_items.*', 'product.name', 'product.price')
-        ->where('cart_items.user_id', $userId)
-        ->get();
+              ->join('product', 'cart_items.product_id', '=', 'product.product_id')
+              ->select('cart_items.*', 'product.name', 'product.price')
+              ->where('cart_items.user_id', $userId)
+              ->paginate(3);
 
         return view('DoAn_NhomF.cart', compact('cartItems'));
     }

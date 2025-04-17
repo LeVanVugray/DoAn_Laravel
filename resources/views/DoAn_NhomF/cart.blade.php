@@ -24,6 +24,7 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -195,8 +196,8 @@
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive mb-5">
                 <table class="table table-light table-borderless table-hover text-center mb-0">
-                <thead class="thead-dark">   			
-			<tr>
+                    <thead class="thead-dark">   			
+			            <tr>
                             <th>Products</th>
                             <th>Price</th>
                             <th>Size</th>
@@ -206,11 +207,11 @@
                             <th>Remove</th>
                         </tr>
                     </thead>
-<tbody class="align-middle">
-                    @foreach($cartItems as $item)
+                    <tbody class="align-middle">
+                        @foreach($cartItems as $item)
                             <tr data-cart-item-id="{{ $item->cart_items_id }}">
                                 <td class="align-middle">{{ $item->name }}</td>
-                                <td class="align-middle" data-price="{{ $item->price }}">{{ $item->price }}</td>
+                                <td class="align-middle price-cell" data-price="{{ $item->price }}">{{ $item->price }}</td>
  				                <td class="align-middle">{{ $item->size }}</td>
                                 <td class="align-middle">{{ $item->color }}</td>
 
@@ -238,9 +239,18 @@
                                 </td>
                             </tr>
                         @endforeach
-			</tbody>
+			        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
     <!-- Cart End -->
-    
+
+    <!-- Phan Trang -->
+    <div class="d-flex justify-content-center">
+        {{ $cartItems->links() }}
+    </div>
+    <!-- Phan Trang/End -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
