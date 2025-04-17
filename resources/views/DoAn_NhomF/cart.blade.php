@@ -195,31 +195,25 @@
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive mb-5">
                 <table class="table table-light table-borderless table-hover text-center mb-0">
-
-
-
-
-
                 <thead class="thead-dark">   			
 			<tr>
                             <th>Products</th>
                             <th>Price</th>
                             <th>Size</th>
-                            <th>Color</tn>
+                            <th>Color</th>
                             <th>Quantity</th>
                             <th>Total</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
 <tbody class="align-middle">
-                    @foreach($item as $item)
-                            <tr>
-                                <td class="align-middle">{{ $item->name }}
-                                    <img src="{{ asset('img/product-1.jpg')}}" alt="" style="width: 50px;"> Product Name
-                                </td>
-                                <td class="align-middle">{{ $item->price }}</td>
+                    @foreach($cartItems as $item)
+                            <tr data-cart-item-id="{{ $item->cart_items_id }}">
+                                <td class="align-middle">{{ $item->name }}</td>
+                                <td class="align-middle" data-price="{{ $item->price }}">{{ $item->price }}</td>
  				                <td class="align-middle">{{ $item->size }}</td>
                                 <td class="align-middle">{{ $item->color }}</td>
+
                                 <td class="align-middle">
                                     <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
@@ -227,28 +221,26 @@
                                         <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input" value="{{ $item->quantity }}">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
                                 </div></td>
-                                <td class="align-middle"> $item->total </td>
+
+                                <td class="align-middle total-cell">{{ $item->price }}</td>
+
                                 <td class="align-middle">
-                                <button class="btn btn-sm btn-danger">
-                                    <i class="fa fa-times">
-                                    <a href="{{ route('CartItem.Delete', ['cart_items_id' => $cart_items_id -> cart_items_id]) }}">Remove</a>
-                                    </i>
-                                </button>
+                        
+                                    <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}" class="btn btn-sm btn-danger"> <i class="fa fa-times"></i>Remove</a>
+                
                                 </td>
                             </tr>
                         @endforeach
 			</tbody>
     <!-- Cart End -->
-
-
-    <!-- Footer Start -->
+    
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">
             <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
@@ -317,25 +309,99 @@
             </div>
         </div>
     </div>
-    <!-- Footer End -->
 
-
-    <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
-
-    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('lib/easing/easing.min.js')}}"></script>
     <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
-
-    <!-- Contact Javascript File -->
     <script src="{{ asset('mail/jqBootstrapValidation.min.js')}}"></script>
     <script src="{{ asset('mail/contact.js')}}"></script>
-
-    <!-- Template Javascript -->
     <script src="{{ asset('js/main.js')}}"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function updateTotal(row) {
+      
+        var price = parseFloat(row.querySelector('.price-cell').getAttribute('data-price'));
+        
+        var quantity = parseInt(row.querySelector('.quantity-input').value);
+     
+        var total = price * quantity;
+       
+        row.querySelector('.total-cell').innerText = total.toFixed(2);
+    }
+
+ 
+    document.querySelectorAll('.btn-plus').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+      
+            var row = e.target.closest('tr');
+            var input = row.querySelector('.quantity-input');
+            var currentVal = parseInt(input.value);
+            if (!isNaN(currentVal)) {
+                input.value = currentVal + 1;
+                updateTotal(row);
+                updateCartItem(row);
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-minus').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var row = e.target.closest('tr');
+            var input = row.querySelector('.quantity-input');
+            var currentVal = parseInt(input.value);
+            if (!isNaN(currentVal) && currentVal > 1) { 
+                input.value = currentVal - 1;
+                updateTotal(row);
+                updateCartItem(row);
+            }
+        });
+    });
+
+    document.querySelectorAll('.quantity-input').forEach(function(input) {
+        input.addEventListener('change', function(e) {
+            var row = e.target.closest('tr');
+            updateTotal(row);
+            updateCartItem(row);
+        });
+    });
+    function updateCartItem(row) {
+        const cartItemId = row.dataset.cartItemId; 
+        const quantity = row.querySelector('.quantity-input').value;
+
+        fetch('/cart/update-quantity', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+         
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                cart_items_id: cartItemId,
+                quantity: quantity
+            })
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Update failed.');
+            }
+        })
+        .then(data => {
+            console.log('Updated successfully', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+});
+</script>
 </body>
 
 </html>

@@ -97,8 +97,11 @@ Route::get('shop', [DoAnNhomController::class, 'shop'])->name('shop');
 
 Route::get('detail', [DoAnNhomController::class, 'detail'])->name('detail');
 
-Route::get('cart', [DoAnNhomController::class, 'cart'])->name('cart');
+Route::get('cart', [CartController::class, 'layGioHang'])->name('DoAn_NhomF.cart');
 
+Route::get('/cart/item/delete/{cart_items_id}', [CartItemsController::class, 'xoaSanPham'])
+     ->name('cartItem.Delete');
+     
 Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout');
 
 Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');

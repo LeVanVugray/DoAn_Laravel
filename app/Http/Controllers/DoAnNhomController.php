@@ -65,28 +65,30 @@ class DoAnNhomController extends Controller
         ]);
     }
 
+    public function xoaSanPham(Request $request) {
+        $cart_items_id = $request->get('cart_items_id');
+        
+        if (!$cart_items_id || !CartItems::find($cart_items_id)) {
+            return redirect()->route('DoAn_NhomF.cart')->with('error', 'Sản phẩm không tồn tại.');
+        }
 
-    public function readUser(Request $request) {
-        $user_id = $request->get('user_id');
-        $item = CartItems::find($user_id);
+        CartItems::destroy($cart_items_id);
 
-        return view('DoAn_NhomF.cart', ['item' => $item]);
+        return redirect()->route('DoAn_NhomF.cart')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
     }
 
 
+    public function layGioHang(Request $request) {
 
-    public function deleteUser(Request $request) {
-        $cart_item_id = $request->get('cart_items_id');
-        $done = CartItems::destroy($cart_items_id);
-
-        return redirect("list");
-    }
-
-
-    public function phanTrangGioHang(Request $request) {
         $userId = auth()->id();     
-        $cartItems = CartItems::where('user_id', $userId)->paginate(33);
-        return view('DoAn_NhomF.index', compact('products'));
+
+        $cartItems = DB::table('cart_items')
+        ->join('product', 'cart_items.product_id', '=', 'product.product_id')
+        ->select('cart_items.*', 'product.name', 'product.price')
+        ->where('cart_items.user_id', $userId)
+        ->get();
+
+        return view('DoAn_NhomF.cart', compact('cartItems'));
     }
 
 }
