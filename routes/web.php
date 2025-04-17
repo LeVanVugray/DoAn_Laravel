@@ -18,6 +18,59 @@ use App\Http\Controllers\AdminController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// Admin
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminController::class, 'indexadmin'])->name('indexadmin');
+
+    // Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
+
+    Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
+
+    Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
+
+
+    Route::get('itemadmin', [AdminController::class, 'itemadmin'])->name('itemadmin');
+
+    Route::get('from_add_user', [AdminController::class, 'from_add_user'])->name('from_add_user');
+    Route::post('from_add_user', [AdminController::class, 'post_from_add_user'])->name('post_from_add_user');
+
+    Route::get('from_update_user', [AdminController::class, 'from_update_user'])->name('from_update_user');
+    Route::post('from_update_user', [AdminController::class, 'post_from_update_user'])->name('post_from_update_user');
+
+    Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
+
+    Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
+
+    Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
+
+});
+// Admin
+Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
+
+Route::get('itemadmin', [AdminController::class, 'itemadmin'])->name('itemadmin');
+
+Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
+
+Route::get('sidebaradmin', [AdminController::class, 'sidebaradmin'])->name('sidebaradmin');
+
+Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
+
+Route::get('footeradmin', [AdminController::class, 'footeradmin'])->name('footeradmin');
+
+Route::get('headeradmin', [AdminController::class, 'headeradmin'])->name('headeradmin');
+
+Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
+
+Route::get('from_add_user', [AdminController::class, 'from_add_user'])->name('from_add_user');
+Route::post('from_add_user', [AdminController::class, 'post_from_add_user'])->name('post_from_add_user');
+
+Route::get('from_update_user', [AdminController::class, 'from_update_user'])->name('from_update_user');
+Route::post('from_update_user', [AdminController::class, 'post_from_update_user'])->name('post_from_update_user');
+
+Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
+
+Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
+
 // Đồ Án Nhóm F
 Route::get('index', [DoAnNhomController::class, 'index'])->name('index');
 
@@ -32,6 +85,9 @@ Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout'
 Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
 
 Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
+
+Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('detailsearch');
+
 
 // crud_User
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
