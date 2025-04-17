@@ -18,6 +18,20 @@ use App\Http\Controllers\AdminController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// Đồ Án Nhóm F
+Route::get('index', [DoAnNhomController::class, 'index'])->name('index');
+
+Route::get('shop', [DoAnNhomController::class, 'shop'])->name('shop');
+
+Route::get('detail', [DoAnNhomController::class, 'detail'])->name('detail');
+
+Route::get('cart', [DoAnNhomController::class, 'cart'])->name('cart');
+
+Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout');
+
+Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
+
+// crud_User
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
 
 Route::get('login', [CrudUserController::class, 'login'])->name('login');

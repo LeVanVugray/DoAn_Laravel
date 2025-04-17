@@ -100,7 +100,7 @@ class AdminController extends Controller
             'phone' => 'nullable|string|max:15',
             'address' => 'nullable|string|max:255',
             'password' => 'nullable|min:6',
-            'role' => 'required|in:0,1', // 0 = admin, 1 = customer
+            'role' => 'required|in:0,1', // 0 = admin
         ]);
         $data = $request->all();
         $check = Users::create([
