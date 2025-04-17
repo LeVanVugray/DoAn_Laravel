@@ -31,6 +31,8 @@ Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout'
 
 Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
 
+Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
+
 // crud_User
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
 
