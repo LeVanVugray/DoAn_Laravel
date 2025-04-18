@@ -71,6 +71,8 @@ Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUs
 
 Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
+Route::get('productadmin', [AdminController::class, 'productsadmin'])->name('admin.productadmin');
+
 //Login & Register
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
 
