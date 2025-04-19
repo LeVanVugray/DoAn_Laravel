@@ -17,10 +17,9 @@ return new class extends Migration
             $table->string('payment_method', 20);  // Ví dụ: "Credit Card", "PayPal"
             $table->tinyInteger('payment_status')->default(1); // 1 = success
             $table->timestamp('payment_date')->useCurrent();
-
+            $table->timestamps(); 
             // Khóa ngoại
-            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
-            $table->timestamps();
+            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('set null');
         });
     }
 

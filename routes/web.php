@@ -6,6 +6,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ExeController;
 use App\Http\Controllers\DoAnNhomController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RoleControllers;
 
 
 /*
@@ -20,9 +21,8 @@ use App\Http\Controllers\AdminController;
 */
 // Admin
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'indexadmin'])->name('indexadmin');
 
-    // Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
+    Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
 
     Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
 
@@ -108,6 +108,8 @@ Route::post('update', [CrudUserController::class, 'postUpdateUser'])->name('user
 Route::get('list', [CrudUserController::class, 'listUser'])->name('user.list');
 
 Route::get('signout', [CrudUserController::class, 'signOut'])->name('signout');
+
+Route::get('role', [RoleControllers::class, 'role'])->name('user.role');
 
 Route::get('/', function () {
     return view('welcome');

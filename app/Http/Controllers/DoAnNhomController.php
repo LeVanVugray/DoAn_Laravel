@@ -36,16 +36,6 @@ class DoAnNhomController extends Controller
         // Lấy product_id từ query string
         $products = Product::take(4)->get();
         $product_id = $request->input('product_id');
-        
-        // Tìm sản phẩm theo product_id
-        $product = Product::find($product_id);
-        
-        // Kiểm tra nếu không có sản phẩm với product_id
-        // if (!$product) {
-        // return redirect()->route('shop')->with('error', 'Product not found');
-        // }
-
-        // Trả về view với sản phẩm
         return view('DoAN_nhomF.detailsearch', compact('products','product'));  
     }
     public function search(Request $request)
@@ -56,10 +46,10 @@ class DoAnNhomController extends Controller
         if ($query) {
             $products = Product::where('name', 'LIKE', "%$query%")
                                ->orWhere('description', 'LIKE', "%$query%")
-                             ->paginate(4)
+                             ->paginate(3)
                              ->appends(['query' => $query]);
         } else {
-            $products = collect(); // Rỗng để không lỗi view
+            $products = Product::paginate(3);
         }
 
         return view('DoAN_nhomF.search', [

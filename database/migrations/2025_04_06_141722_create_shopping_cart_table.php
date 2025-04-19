@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('shopping_cart', function (Blueprint $table) {
             $table->id('cart_id');
             $table->unsignedBigInteger('user_id')->nullable();
-            // Khóa ngoại
-            $table->foreign('user_id')->references('user_id')->on('user')->onDelete('cascade');
+            $table->timestamps(); // Thời gian tạo và cập nhật
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
+            // Khóa Ngoại
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+
         });
     }
 

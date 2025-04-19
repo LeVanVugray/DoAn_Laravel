@@ -25,12 +25,23 @@
             display: flex;
             padding: 10px;
         }
+
+
+#header h1 {
+    margin: 0;
+}
+
+#header img {
+    height: 70px; /* hoặc 40px nếu muốn nhỏ hơn */
+    object-fit: contain;
+}
+
     </style>
 </head>
 <body>
     <!--Header-part-->
     <div id="header">
-        <h1><a href="#"><img src="{{ asset('admin/images/logo.png') }}" alt=""></a></h1>
+        <h1><a href="#"><img src="{{ asset('admin/images/logo_shose.png') }}" alt=""></a></h1>
     </div>
     <!--close-Header-part-->
 

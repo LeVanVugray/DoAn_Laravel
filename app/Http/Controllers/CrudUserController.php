@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class CrudUserController extends Controller
 {
-
+    const MAX_RECORDS = 10;
     /**
      * Login page
      */
@@ -66,32 +66,17 @@ class CrudUserController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'github' => 'required|String|max:255',
-            'ale' => 'required|integer|min:0',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+           
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
         ]);
 
         $data = $request->all();
-        if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
-            // Kiểm tra nếu tệp là hình ảnh hợp lệ
-            if ($avatar->isValid()) {
-                $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-                $avatar->move(public_path('img'), $avatarName);  // Lưu vào thư mục public/img/
-                $data['avatar'] = $avatarName;
-            } else {
-                return back()->withErrors(['avatar' => 'The uploaded file is not a valid image.']);
-            }
-        }
+        
     
         $check = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
-            'github' => $data['github'],
-            'ale' => $data['ale'],
-            'avatar' => isset($data['avatar']) ? $data['avatar'] : null,
             'password' => Hash::make($data['password'])
         ]);
 
@@ -138,9 +123,7 @@ class CrudUserController extends Controller
 
         $request->validate([
             'name' => 'required',
-            'github' => 'required|String|max:255',
-            'ale' => 'required|integer|min:0',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            
             'email' => 'required|email|unique:users,id,'.$input['id'],
             'password' => 'required|min:6',
 
@@ -148,34 +131,11 @@ class CrudUserController extends Controller
 
        $user = User::find($input['id']);
        $user->name = $input['name'];
-       $user->github = $input['github'];
-       $user->ale = $input['ale'];
+      
        $user->email = $input['email'];
        $user->password = $input['password'];
 
-     // Kiểm tra và xử lý ảnh nếu có
-     if ($request->hasFile('avatar')) {
-        // Kiểm tra ảnh hợp lệ
-        $avatar = $request->file('avatar');
-        
-        // Đặt tên ảnh là thời gian hiện tại + extension
-        $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-
-        if ($user->avatar) {
-            // Đường dẫn đến ảnh cũ
-            $oldAvatarPath = public_path('img/' . $user->avatar);
-            
-            // Kiểm tra nếu ảnh cũ tồn tại, thì xóa
-            if (file_exists($oldAvatarPath)) {
-                unlink($oldAvatarPath); // Xóa ảnh cũ
-            }
-        }
-        // Lưu ảnh vào thư mục public/img/
-        $avatar->move(public_path('img'), $avatarName);
-
-        // Cập nhật avatar trong database
-        $user->avatar = $avatarName;
-    }
+    
        $user->save();
 
         return redirect("list")->withSuccess('You have signed-in');
@@ -189,6 +149,7 @@ class CrudUserController extends Controller
         if(Auth::check()){
             $users = User::all();
             $products = Product::all();
+            $users = User::paginate(self::MAX_RECORDS);
             return view('crud_user.list', ['users' => $users],['products' => $products]);
         }
 

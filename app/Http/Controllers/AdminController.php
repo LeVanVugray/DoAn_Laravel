@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    
+
     public function indexadmin(){
         return view('DoAN_nhomF.admin.index');
     }
@@ -21,8 +23,8 @@ class AdminController extends Controller
         return view('DoAN_nhomF.admin.result');
     }
     public function revenuetadmin(){
-        
-        return view('DoAN_nhomF.admin.revenue');
+        $users = Users::all();
+        return view('DoAN_nhomF.admin.revenue',compact('users'));
     }
     
     public function sidebaradmin(){

@@ -11,4 +11,9 @@ class Manufactures extends Model
         'manu_name', 
         'image_manu',
     ];
+    // Quan hệ với Product (1 Manufacture có thể có nhiều Product)
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'manu_id');
+    }
 }

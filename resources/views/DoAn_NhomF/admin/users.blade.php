@@ -76,7 +76,7 @@
                 <!-- Phân trang -->
                 <div class="row" style="margin-left: 18px;">
                 <ul class="pagination">
-                    <li {{ $users->links('pagination::bootstrap-4') }}</li>
+                    <li {{ $users->links('pagination::bootstrap-5') }}</li>
                     </ul>
                 </div>
             </div>

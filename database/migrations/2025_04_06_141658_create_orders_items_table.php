@@ -19,11 +19,12 @@ return new class extends Migration
             $table->unsignedBigInteger('color_id')->nullable();
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
-            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-            $table->foreign('size_id')->references('size_id')->on('sizes')->onDelete('cascade');
-            $table->foreign('color_id')->references('color_id')->on('colors')->onDelete('cascade');
         });
+        // Khóa ngoại
+        $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('set null');
+        $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
+        $table->foreign('size_id')->references('size_id')->on('sizes')->onDelete('set null');
+        $table->foreign('color_id')->references('color_id')->on('colors')->onDelete('set null');
 
     }
 

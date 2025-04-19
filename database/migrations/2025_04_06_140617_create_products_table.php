@@ -20,8 +20,9 @@ return new class extends Migration
             $table->unsignedBigInteger('manu_id')->nullable(); // Khóa ngoại tham chiếu đến bảng categories
             $table->string('image')->nullable(); // Thêm cột image, có thể null
             $table->timestamps(); // Thời gian tạo và cập nhật
-            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('cascade');
-            $table->foreign('manu_id')->references('manu_id')->on('manufactures')->onDelete('cascade');
+            // Khóa Ngoại
+            $table->foreign('category_id')->references('category_id')->on('categories')->onDelete('set null');
+            $table->foreign('manu_id')->references('manu_id')->on('manufactures')->onDelete('set null');
         });
 
     }
