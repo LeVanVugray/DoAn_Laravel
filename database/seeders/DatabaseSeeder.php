@@ -28,9 +28,9 @@ class DatabaseSeeder extends Seeder
 
 
             // User Của Thầy
-            // UserSeeder::class,
-            // RoleSeeder::class,
-            // UserRoleSeeder::class,
+            UserSeeder::class,
+            RoleSeeder::class,
+            UserRoleSeeder::class,
         ]);
     }
 }

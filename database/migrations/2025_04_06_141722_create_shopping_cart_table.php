@@ -15,10 +15,8 @@ return new class extends Migration
             $table->id('cart_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps(); // Thời gian tạo và cập nhật
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
-
             // Khóa Ngoại
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('set null');
 
         });
     }

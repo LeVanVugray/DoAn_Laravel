@@ -22,7 +22,7 @@ return new class extends Migration
         });
         // Khóa ngoại
         $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('set null');
-        $table->foreign('product_id')->references('id')->on('products')->onDelete('set null');
+        $table->foreign('product_id')->references('product_id')->on('products')->onDelete('set null');
         $table->foreign('size_id')->references('size_id')->on('sizes')->onDelete('set null');
         $table->foreign('color_id')->references('color_id')->on('colors')->onDelete('set null');
 
