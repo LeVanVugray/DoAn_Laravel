@@ -97,10 +97,7 @@ Route::get('shop', [DoAnNhomController::class, 'shop'])->name('shop');
 
 Route::get('detail', [DoAnNhomController::class, 'detail'])->name('detail');
 
-Route::get('cart', [CartController::class, 'layGioHang'])->name('DoAn_NhomF.cart');
 
-Route::get('/cart/item/delete/{cart_items_id}', [CartItemsController::class, 'xoaSanPham'])
-     ->name('cartItem.Delete');
      
 Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout');
 
@@ -109,6 +106,15 @@ Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
 Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
 
 Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('detailsearch');
+
+
+
+// GioHang
+Route::get('/cart/item/delete/{cart_items_id}', [cart_controller::class, 'xoaSanPham'])->name('cartItem.Delete');
+
+Route::post('/cart-checkout', [cart_controller::class, 'addToCheckout'])->name('cartItem.addToCheckout');
+
+Route::get('cart', [cart_controller::class, 'layGioHang'])->name('DoAn_NhomF.cart');
 
 // EXE1
 Route::get('indexexe', [ExeController::class, 'indexexe'])->name('indexexe');

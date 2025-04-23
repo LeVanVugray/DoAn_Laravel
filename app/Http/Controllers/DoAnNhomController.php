@@ -63,34 +63,5 @@ class DoAnNhomController extends Controller
             'products' => $products,
             'query' => $query
         ]);
-    }
-
-    public function xoaSanPham(Request $request) {
-        $cart_items_id = $request->get('cart_items_id');
-        
-        if (!$cart_items_id || !CartItems::find($cart_items_id)) {
-            return redirect()->route('DoAn_NhomF.cart')->with('error', 'Sản phẩm không tồn tại.');
-        }
-
-        CartItems::destroy($cart_items_id);
-
-        return redirect()->route('DoAn_NhomF.cart')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
-    }
-
-
-    public function layGioHang(Request $request) {
-
-        $currentPage = $request->query('page', 1);
-
-        $userId = auth()->id();     
-
-        $cartItems = DB::table('cart_items')
-              ->join('product', 'cart_items.product_id', '=', 'product.product_id')
-              ->select('cart_items.*', 'product.name', 'product.price')
-              ->where('cart_items.user_id', $userId)
-              ->paginate(3);
-
-        return view('DoAn_NhomF.cart', compact('cartItems'));
-    }
-
+    }   
 }

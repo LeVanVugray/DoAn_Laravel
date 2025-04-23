@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('size')->nullable();
             $table->unsignedBigInteger('color')->nullable();
             $table->integer('quantity');
+            $table->integer('choose');
             // Khóa ngoại
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
           

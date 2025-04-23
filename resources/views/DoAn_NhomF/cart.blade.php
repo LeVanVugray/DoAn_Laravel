@@ -193,88 +193,139 @@
 
     <!-- Cart Start -->
     <div class="container-fluid">
-        <div class="row px-xl-5">
-            <div class="col-lg-8 table-responsive mb-5">
-                <table class="table table-light table-borderless table-hover text-center mb-0">
-                    <thead class="thead-dark">   			
-			            <tr>
-                            <th>Products</th>
-                            <th>Price</th>
-                            <th>Size</th>
-                            <th>Color</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody class="align-middle">
-                        @foreach($cartItems as $item)
-                            <tr data-cart-item-id="{{ $item->cart_items_id }}">
-                                <td class="align-middle">{{ $item->name }}</td>
-                                <td class="align-middle price-cell" data-price="{{ $item->price }}">{{ $item->price }}</td>
- 				                <td class="align-middle">{{ $item->size }}</td>
-                                <td class="align-middle">{{ $item->color }}</td>
-
-                                <td class="align-middle">
-                                    <div class="input-group quantity mx-auto" style="width: 100px;">
+    <div class="row px-xl-5">
+    
+        <!-- Cart Items Section -->
+        <div class="col-lg-8 table-responsive mb-5">
+            <h5 class="section-title position-relative text-uppercase mb-3">
+                <span class="bg-secondary pr-3">Cart Items</span>
+            </h5>
+            <table class="table table-light table-borderless table-hover text-center mb-0">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Products</th>
+                        <th>Price</th>
+                        <th>Size</th>
+                        <th>Color</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Add to Checkout</th>
+                        <th>Remove</th>
+                    </tr>
+                </thead>
+                <tbody class="align-middle">
+                    @foreach($cartItems as $item)
+                        <tr data-cart-item-id="{{ $item->cart_items_id }}">
+                            <td class="align-middle">{{ $item->name }}</td>
+                            <td class="align-middle price-cell" data-price="{{ $item->price }}">
+                                ${{ number_format($item->price, 2) }}
+                            </td>
+                            <td class="align-middle">{{ $item->size }}</td>
+                            <td class="align-middle">{{ $item->color }}</td>
+                            <td class="align-middle">
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
                                     <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
+                                        <button class="btn btn-sm btn-primary btn-minus">
+                                            <i class="fa fa-minus"></i>
                                         </button>
                                     </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input" value="{{ $item->quantity }}">
+                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
+                                        value="{{ $item->quantity }}">
                                     <div class="input-group-btn">
                                         <button class="btn btn-sm btn-primary btn-plus">
                                             <i class="fa fa-plus"></i>
                                         </button>
                                     </div>
-                                </div></td>
-
-                                <td class="align-middle total-cell">{{ $item->price }}</td>
-
-                                <td class="align-middle">
-                        
-                                    <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}" class="btn btn-sm btn-danger"> <i class="fa fa-times"></i>Remove</a>
-                
-                                </td>
-                            </tr>
+                                </div>
+                            </td>
+                            <!-- Hiển thị Total = price × quantity -->
+                            <td class="align-middle total-cell">
+                                ${{ number_format($item->price * $item->quantity, 2) }}
+                            </td>
+                            <!-- Nút chuyển sản phẩm sang giỏ thanh toán -->
+                            <td class="align-middle">
+                                <button type="button" class="btn btn-sm btn-success add-to-checkout">
+                                    <i class="fa fa-shopping-cart"></i> To Checkout
+                                </button>
+                            </td>
+                            <!-- Nút xóa khỏi giỏ hàng -->
+                            <td class="align-middle">
+                                <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}"
+                                   class="btn btn-sm btn-danger">
+                                    <i class="fa fa-times"></i> Remove
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Checkout Summary Section -->
+        <div class="col-lg-4">
+            <h5 class="section-title position-relative text-uppercase mb-3">
+                <span class="bg-secondary pr-3">Checkout Summary</span>
+            </h5>
+            <div class="bg-light p-30 mb-5">
+                <!-- Danh sách sản phẩm trong giỏ thanh toán -->
+                <div class="mb-4">
+                    <h6>Your Checkout Items:</h6>
+                    <ul class="list-unstyled" id="checkout-items">
+                        @foreach($checkoutItems as $item)
+                            <li class="mb-2 d-flex justify-content-between align-items-center"
+                                id="checkout-item-{{ $item->id }}"
+                                data-price="{{ $item->price }}"
+                                data-number="{{ $item->number }}">
+                                <div>
+                                    <strong>{{ $item->name }}</strong><br>
+                                    Quantity: {{ $item->number }}<br>
+                                    Color: {{ $item->color }}
+                                </div>
+                                <div>
+                                    <button type="button" data-id="{{ $item->id }}"
+                                            class="btn btn-sm btn-danger remove-checkout-item">
+                                        <i class="fa fa-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </li>
                         @endforeach
-			        </tbody>
-                </table>
-            </div>
+                    </ul>
+                </div>
+                
+                @php
+                    // Tính toán subtotal từ giỏ thanh toán
+                    $subtotal = 0;
+                    foreach ($checkoutItems as $item) {
+                        $subtotal += $item->price * $item->number;
+                    }
+                    $shipping = round($subtotal * 0.10, 2); // 10% shipping
+                    $total = $subtotal + $shipping;
+                @endphp
 
-            <div class="col-lg-4">
-                <form class="mb-30" action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-0 p-4" placeholder="Coupon Code">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary">Apply Coupon</button>
-                        </div>
+                <div class="border-bottom pb-2" id="summary-values">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h6>Subtotal</h6>
+                        <h6 id="subtotal-value">${{ number_format($subtotal, 2) }}</h6>
                     </div>
-                </form>
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
-                <div class="bg-light p-30 mb-5">
-                    <div class="border-bottom pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Subtotal</h6>
-                            <h6>$150</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
-                        </div>
+                    <div class="d-flex justify-content-between">
+                        <h6 class="font-weight-medium">Shipping (10%)</h6>
+                        <h6 class="font-weight-medium" id="shipping-value">${{ number_format($shipping, 2) }}</h6>
                     </div>
-                    <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5>Total</h5>
-                            <h5>$160</h5>
-                        </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                </div>
+                <div class="pt-2">
+                    <div class="d-flex justify-content-between mt-2">
+                        <h5>Total</h5>
+                        <h5 id="total-value">${{ number_format($total, 2) }}</h5>
                     </div>
+                    <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">
+                        Proceed To Checkout
+                    </button>
                 </div>
             </div>
         </div>
+        
     </div>
+</div>
     <!-- Cart End -->
 
     <!-- Phan Trang -->
@@ -282,74 +333,6 @@
         {{ $cartItems->links() }}
     </div>
     <!-- Phan Trang/End -->
-    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor. Rebum tempor no vero est magna amet no</p>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
-                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
-                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
-            </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                        <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
-                        <form action="">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Your Email Address">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary">Sign Up</button>
-                                </div>
-                            </div>
-                        </form>
-                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-                        <div class="d-flex">
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
-                    by
-                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
-                </p>
-            </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="{{ asset('img/payments.png')}}" alt="">
-            </div>
-        </div>
-    </div>
 
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
@@ -361,85 +344,135 @@
     <script src="{{ asset('mail/contact.js')}}"></script>
     <script src="{{ asset('js/main.js')}}"></script>
 
+
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function updateTotal(row) {
-      
-        var price = parseFloat(row.querySelector('.price-cell').getAttribute('data-price'));
-        
-        var quantity = parseInt(row.querySelector('.quantity-input').value);
-     
-        var total = price * quantity;
-       
-        row.querySelector('.total-cell').innerText = total.toFixed(2);
+document.addEventListener('DOMContentLoaded', function() {
+
+    /************** Xử lý tăng/giảm số lượng trong Cart Items **************/
+    // Tăng số lượng
+    document.querySelectorAll('.btn-plus').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('tr');
+            const qtyInput = row.querySelector('.quantity-input');
+            let currentQty = parseInt(qtyInput.value) || 0;
+            qtyInput.value = currentQty + 1;
+            updateRowTotal(row);
+        });
+    });
+
+    // Giảm số lượng
+    document.querySelectorAll('.btn-minus').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('tr');
+            const qtyInput = row.querySelector('.quantity-input');
+            let currentQty = parseInt(qtyInput.value) || 0;
+            if (currentQty > 1) {
+                qtyInput.value = currentQty - 1;
+                updateRowTotal(row);
+            }
+        });
+    });
+
+    // Cập nhật ô Total của 1 dòng theo số lượng mới
+    function updateRowTotal(row) {
+        const price = parseFloat(row.querySelector('.price-cell').getAttribute('data-price'));
+        const qty = parseInt(row.querySelector('.quantity-input').value);
+        const totalCell = row.querySelector('.total-cell');
+        totalCell.textContent = "$" + (price * qty).toFixed(2);
     }
 
- 
-    document.querySelectorAll('.btn-plus').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-      
-            var row = e.target.closest('tr');
-            var input = row.querySelector('.quantity-input');
-            var currentVal = parseInt(input.value);
-            if (!isNaN(currentVal)) {
-                input.value = currentVal + 1;
-                updateTotal(row);
-                updateCartItem(row);
-            }
-        });
-    });
+    /************** Xử lý chuyển sản phẩm từ Cart Items sang Checkout Summary **************/
+    document.querySelectorAll('.add-to-checkout').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const row = btn.closest('tr');
+            const cartItemId = row.getAttribute('data-cart-item-id');
+            const qty = row.querySelector('.quantity-input').value;
+            const price = row.querySelector('.price-cell').getAttribute('data-price');
+            const name = row.querySelector('td:first-child').textContent.trim();
+            const size = row.children[2].textContent.trim();
+            const color = row.children[3].textContent.trim();
 
-    document.querySelectorAll('.btn-minus').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            var row = e.target.closest('tr');
-            var input = row.querySelector('.quantity-input');
-            var currentVal = parseInt(input.value);
-            if (!isNaN(currentVal) && currentVal > 1) { 
-                input.value = currentVal - 1;
-                updateTotal(row);
-                updateCartItem(row);
-            }
-        });
-    });
+            // Payload chứa dữ liệu cần chuyển sang Checkout
+            const payload = {
+                cart_item_id: cartItemId,
+                quantity: qty,
+                price: price,
+                name: name,
+                size: size,
+                color: color
+            };
 
-    document.querySelectorAll('.quantity-input').forEach(function(input) {
-        input.addEventListener('change', function(e) {
-            var row = e.target.closest('tr');
-            updateTotal(row);
-            updateCartItem(row);
-        });
-    });
-    function updateCartItem(row) {
-        const cartItemId = row.dataset.cartItemId; 
-        const quantity = row.querySelector('.quantity-input').value;
+            // Lấy CSRF token từ meta tag
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        fetch('/cart/update-quantity', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-         
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({
-                cart_items_id: cartItemId,
-                quantity: quantity
+            fetch("{{ route('cartItem.addToCheckout') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                },
+                body: JSON.stringify(payload)
             })
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.json();
-            } else {
-                throw new Error('Update failed.');
-            }
-        })
-        .then(data => {
-            console.log('Updated successfully', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    alert("Item added to Checkout successfully.");
+                    // Bạn có thể muốn xoá hoặc cập nhật dòng này ở Cart Items nếu cần
+                } else {
+                    alert("Failed to add item to Checkout.");
+                }
+            })
+            .catch(error => {
+                console.error("Error adding item to Checkout:", error);
+                alert("Error occurred while adding item to checkout.");
+            });
         });
+    });
+
+    /************** Xử lý xóa sản phẩm khỏi Checkout Summary **************/
+    document.querySelectorAll('.remove-checkout-item').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-id');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+            fetch("{{ url('cart-checkout') }}/" + itemId, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrfToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    // Xóa phần tử khỏi DOM
+                    const elem = document.getElementById('checkout-item-' + itemId);
+                    if(elem) { elem.remove(); }
+                    updateSummary();
+                } else {
+                    alert("Failed to remove checkout item. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error removing checkout item:", error);
+                alert("Error occurred while removing the checkout item.");
+            });
+        });
+    });
+
+    // Hàm cập nhật lại các số liệu ở Checkout Summary: subtotal, shipping và total
+    function updateSummary() {
+        let subtotal = 0;
+        document.querySelectorAll('#checkout-items li').forEach(function(li) {
+            const price = parseFloat(li.getAttribute('data-price'));
+            const num = parseInt(li.getAttribute('data-number'));
+            subtotal += price * num;
+        });
+        const shipping = parseFloat((subtotal * 0.10).toFixed(2));
+        const total = subtotal + shipping;
+        document.getElementById('subtotal-value').textContent = "$" + subtotal.toFixed(2);
+        document.getElementById('shipping-value').textContent = "$" + shipping.toFixed(2);
+        document.getElementById('total-value').textContent = "$" + total.toFixed(2);
     }
 });
 </script>
