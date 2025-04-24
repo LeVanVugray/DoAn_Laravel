@@ -193,139 +193,81 @@
 
     <!-- Cart Start -->
     <div class="container-fluid">
-    <div class="row px-xl-5">
+        <div class="row px-xl-5">
     
         <!-- Cart Items Section -->
-        <div class="col-lg-8 table-responsive mb-5">
-            <h5 class="section-title position-relative text-uppercase mb-3">
-                <span class="bg-secondary pr-3">Cart Items</span>
-            </h5>
-            <table class="table table-light table-borderless table-hover text-center mb-0">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Products</th>
-                        <th>Price</th>
-                        <th>Size</th>
-                        <th>Color</th>
-                        <th>Quantity</th>
-                        <th>Total</th>
-                        <th>Add to Checkout</th>
-                        <th>Remove</th>
-                    </tr>
-                </thead>
-                <tbody class="align-middle">
-                    @foreach($cartItems as $item)
-                        <tr data-cart-item-id="{{ $item->cart_items_id }}">
-                            <td class="align-middle">{{ $item->name }}</td>
-                            <td class="align-middle price-cell" data-price="{{ $item->price }}">
-                                ${{ number_format($item->price, 2) }}
-                            </td>
-                            <td class="align-middle">{{ $item->size }}</td>
-                            <td class="align-middle">{{ $item->color }}</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
-                                        value="{{ $item->quantity }}">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
+            <div class="col-lg-8 table-responsive mb-5">
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-secondary pr-3">Cart Items</span>
+                </h5>
+                <form action="{{ route('cart.update') }}" method="POST">
+                    @csrf
+                    <table class="table table-light table-borderless table-hover text-center mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th><th>
+                                <th>Products</th>
+                                <th>Price</th>
+                                <th>Size</th>
+                                <th>Color</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Add to Checkout</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            @foreach($cartItems as $item)
+                                <tr data-cart-item-id="{{ $item->cart_items_id }}">
+                                    <td>
+                                        <input type="checkbox" class="select-item" name="selected[]" value="{{ $item->check }}"{{$item->check == 1 ? 'checked' : ''}}>
+                                    </td>
+                                    <td class="align-middle">{{ $item->name }}</td>
+                                    <td class="align-middle price-cell" data-price="{{ $item->price }}">
+                                    ${{$item->price}}
+                                    </td>
+                                    <td class="align-middle">{{ $item->size }}</td>
+                                    <td class="align-middle">{{ $item->color }}</td>
+                                    <td class="align-middle">
+                                        <div class="input-group quantity mx-auto" style="width: 100px;">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary btn-minus">
+                                                    <i class="fa fa-minus"></i>
+                                                </button>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
+                                                value="{{ $item->quantity }}">
+                                            <div class="input-group-btn">
+                                                <button class="btn btn-sm btn-primary btn-plus">
+                                                    <i class="fa fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </td>
                             <!-- Hiển thị Total = price × quantity -->
-                            <td class="align-middle total-cell">
-                                ${{ number_format($item->price * $item->quantity, 2) }}
-                            </td>
-                            <!-- Nút chuyển sản phẩm sang giỏ thanh toán -->
-                            <td class="align-middle">
-                                <button type="button" class="btn btn-sm btn-success add-to-checkout">
-                                    <i class="fa fa-shopping-cart"></i> To Checkout
-                                </button>
-                            </td>
+                                    <td class="align-middle total-cell">
+                                        ${{ number_format($item->price * $item->quantity, 2) }}
+                                    </td>
                             <!-- Nút xóa khỏi giỏ hàng -->
-                            <td class="align-middle">
-                                <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}"
-                                   class="btn btn-sm btn-danger">
-                                    <i class="fa fa-times"></i> Remove
-                                </a>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        
-        <!-- Checkout Summary Section -->
-        <div class="col-lg-4">
-            <h5 class="section-title position-relative text-uppercase mb-3">
-                <span class="bg-secondary pr-3">Checkout Summary</span>
-            </h5>
-            <div class="bg-light p-30 mb-5">
-                <!-- Danh sách sản phẩm trong giỏ thanh toán -->
-                <div class="mb-4">
-                    <h6>Your Checkout Items:</h6>
-                    <ul class="list-unstyled" id="checkout-items">
-                        @foreach($checkoutItems as $item)
-                            <li class="mb-2 d-flex justify-content-between align-items-center"
-                                id="checkout-item-{{ $item->id }}"
-                                data-price="{{ $item->price }}"
-                                data-number="{{ $item->number }}">
-                                <div>
-                                    <strong>{{ $item->name }}</strong><br>
-                                    Quantity: {{ $item->number }}<br>
-                                    Color: {{ $item->color }}
-                                </div>
-                                <div>
-                                    <button type="button" data-id="{{ $item->id }}"
-                                            class="btn btn-sm btn-danger remove-checkout-item">
-                                        <i class="fa fa-trash"></i> Remove
-                                    </button>
-                                </div>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
-                
-                @php
-                    // Tính toán subtotal từ giỏ thanh toán
-                    $subtotal = 0;
-                    foreach ($checkoutItems as $item) {
-                        $subtotal += $item->price * $item->number;
-                    }
-                    $shipping = round($subtotal * 0.10, 2); // 10% shipping
-                    $total = $subtotal + $shipping;
-                @endphp
-
-                <div class="border-bottom pb-2" id="summary-values">
-                    <div class="d-flex justify-content-between mb-3">
-                        <h6>Subtotal</h6>
-                        <h6 id="subtotal-value">${{ number_format($subtotal, 2) }}</h6>
+                                    <td class="align-middle">
+                                        <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}"
+                                        class="btn btn-sm btn-danger">
+                                        <i class="fa fa-times"></i> Remove
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-primary">
+                        Xác nhận thay đổi dữ liệu
+                        </button>
                     </div>
-                    <div class="d-flex justify-content-between">
-                        <h6 class="font-weight-medium">Shipping (10%)</h6>
-                        <h6 class="font-weight-medium" id="shipping-value">${{ number_format($shipping, 2) }}</h6>
-                    </div>
-                </div>
-                <div class="pt-2">
-                    <div class="d-flex justify-content-between mt-2">
-                        <h5>Total</h5>
-                        <h5 id="total-value">${{ number_format($total, 2) }}</h5>
-                    </div>
-                    <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">
-                        Proceed To Checkout
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
-        
     </div>
-</div>
     <!-- Cart End -->
 
     <!-- Phan Trang -->
@@ -346,9 +288,7 @@
 
 
     <script>
-document.addEventListener('DOMContentLoaded', function() {
-
-    /************** Xử lý tăng/giảm số lượng trong Cart Items **************/
+   
     // Tăng số lượng
     document.querySelectorAll('.btn-plus').forEach(function(btn) {
         btn.addEventListener('click', function() {
@@ -372,109 +312,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
-    // Cập nhật ô Total của 1 dòng theo số lượng mới
-    function updateRowTotal(row) {
-        const price = parseFloat(row.querySelector('.price-cell').getAttribute('data-price'));
-        const qty = parseInt(row.querySelector('.quantity-input').value);
-        const totalCell = row.querySelector('.total-cell');
-        totalCell.textContent = "$" + (price * qty).toFixed(2);
-    }
-
-    /************** Xử lý chuyển sản phẩm từ Cart Items sang Checkout Summary **************/
-    document.querySelectorAll('.add-to-checkout').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const row = btn.closest('tr');
-            const cartItemId = row.getAttribute('data-cart-item-id');
-            const qty = row.querySelector('.quantity-input').value;
-            const price = row.querySelector('.price-cell').getAttribute('data-price');
-            const name = row.querySelector('td:first-child').textContent.trim();
-            const size = row.children[2].textContent.trim();
-            const color = row.children[3].textContent.trim();
-
-            // Payload chứa dữ liệu cần chuyển sang Checkout
-            const payload = {
-                cart_item_id: cartItemId,
-                quantity: qty,
-                price: price,
-                name: name,
-                size: size,
-                color: color
-            };
-
-            // Lấy CSRF token từ meta tag
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch("{{ route('cartItem.addToCheckout') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    alert("Item added to Checkout successfully.");
-                    // Bạn có thể muốn xoá hoặc cập nhật dòng này ở Cart Items nếu cần
-                } else {
-                    alert("Failed to add item to Checkout.");
-                }
-            })
-            .catch(error => {
-                console.error("Error adding item to Checkout:", error);
-                alert("Error occurred while adding item to checkout.");
-            });
-        });
-    });
-
-    /************** Xử lý xóa sản phẩm khỏi Checkout Summary **************/
-    document.querySelectorAll('.remove-checkout-item').forEach(function(button) {
-        button.addEventListener('click', function() {
-            const itemId = this.getAttribute('data-id');
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-            fetch("{{ url('cart-checkout') }}/" + itemId, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    // Xóa phần tử khỏi DOM
-                    const elem = document.getElementById('checkout-item-' + itemId);
-                    if(elem) { elem.remove(); }
-                    updateSummary();
-                } else {
-                    alert("Failed to remove checkout item. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error removing checkout item:", error);
-                alert("Error occurred while removing the checkout item.");
-            });
-        });
-    });
-
-    // Hàm cập nhật lại các số liệu ở Checkout Summary: subtotal, shipping và total
-    function updateSummary() {
-        let subtotal = 0;
-        document.querySelectorAll('#checkout-items li').forEach(function(li) {
-            const price = parseFloat(li.getAttribute('data-price'));
-            const num = parseInt(li.getAttribute('data-number'));
-            subtotal += price * num;
-        });
-        const shipping = parseFloat((subtotal * 0.10).toFixed(2));
-        const total = subtotal + shipping;
-        document.getElementById('subtotal-value').textContent = "$" + subtotal.toFixed(2);
-        document.getElementById('shipping-value').textContent = "$" + shipping.toFixed(2);
-        document.getElementById('total-value').textContent = "$" + total.toFixed(2);
-    }
-});
 </script>
 </body>
 

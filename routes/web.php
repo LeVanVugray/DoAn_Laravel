@@ -7,6 +7,8 @@ use App\Http\Controllers\ExeController;
 use App\Http\Controllers\DoAnNhomController;
 use App\Http\Controllers\AdminController;
 
+use App\Http\Controllers\CartController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -109,12 +111,28 @@ Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('d
 
 
 
+
+
+
+
+
+
+
+
 // GioHang
-Route::get('/cart/item/delete/{cart_items_id}', [cart_controller::class, 'xoaSanPham'])->name('cartItem.Delete');
+Route::get('/cart', [CartController::class, 'index'])->name('index');
 
-Route::post('/cart-checkout', [cart_controller::class, 'addToCheckout'])->name('cartItem.addToCheckout');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 
-Route::get('cart', [cart_controller::class, 'layGioHang'])->name('DoAn_NhomF.cart');
+Route::get('/cart/delete', [CartController::class, 'xoaSanPham'])->name('cartItem.Delete');
+
+
+
+
+
+
+
+
 
 // EXE1
 Route::get('indexexe', [ExeController::class, 'indexexe'])->name('indexexe');

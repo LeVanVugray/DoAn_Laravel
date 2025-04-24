@@ -15,13 +15,15 @@ return new class extends Migration
             $table->id('cart_items_id');
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->unsignedBigInteger('size')->nullable();
-            $table->unsignedBigInteger('color')->nullable();
+            $table->string('size')->nullable();
+            $table->string('color')->nullable();
             $table->integer('quantity');
-            $table->integer('choose');
+            
+            $check->integer('check');
+
             // Khóa ngoại
             $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-          
+            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
         });
 
     }
