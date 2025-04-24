@@ -1,17 +1,6 @@
 {{-- resources/views/DoAn_NhomF/admin/products.blade.php --}}
 @include('DoAn_NhomF.admin.header')
 
-<!-- start-top-search-->
-<div id="search">
-    <form action="" method="get">
-        <input type="text" name="keyword" id="product-search" placeholder="Search here..." />
-        <button type="submit" class="tip-bottom" title="Search">
-            <i class="icon-search icon-white"></i>
-        </button>
-    </form>
-</div>
-<!-- close-top-search -->
-
 @include('DoAn_NhomF.admin.sidebar')
 
 <!-- BEGIN CONTENT -->
@@ -31,6 +20,20 @@
             <a href="{{ route('form_add_product') }}" class="btn btn-primary">
                 <i class="icon-plus"></i> Create Product
             </a>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <form method="GET" action="{{ route('admin.productadmin') }}" style="display: flex; gap: 10px;">
+                <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Search..." class="form-control">
+                
+                <select name="sort" class="form-control" onchange="this.form.submit()">
+                    <option value="">Sort by</option>
+                    <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
+                    <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>Price: Low to High</option>
+                </select>
+
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
         </div>
 
         <!-- Product Grid -->
@@ -110,8 +113,12 @@
                         <div class="product-price">${{ $product->price }}</div>
                     </div>
                     <div class="product-actions">
-                        <a href="#" class="btn btn-success btn-mini">Edit</a>
-                        <a href="#" class="btn btn-danger btn-mini" onclick="return confirm('Are you sure?')">Delete</a>
+                        <a href="{{ route('form_edit_product', ['product_id' => $product->product_id]) }}" class="btn btn-success btn-mini">Edit</a>
+                        <a href="{{ route('deleteProduct', ['product_id' => $product->product_id]) }}"
+                            class="btn btn-danger btn-mini"
+                            onclick="return confirm('Are you sure you want to delete this product?')">
+                            Delete
+                        </a>
                     </div>
                 </div>
             @endforeach

@@ -73,6 +73,14 @@ Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('re
 
 Route::get('productadmin', [AdminController::class, 'productsadmin'])->name('admin.productadmin');
 
+Route::get('addproduct', [AdminController::class, 'form_add_product'])->name('form_add_product');
+Route::post('addproduct', [AdminController::class, 'post_form_add_product'])->name('post_form_add_product');
+
+Route::get('editproduct', [AdminController::class, 'form_edit_product'])->name('form_edit_product');
+Route::post('editproduct', [AdminController::class, 'post_edit_product'])->name('post_edit_product');
+
+Route::get('deleteProduct', [AdminController::class, 'deleteProduct'])->name('deleteProduct');
+
 //Login & Register
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
 
@@ -132,6 +140,10 @@ Route::get('registerexe', [ExeController::class, 'registerexe'])->name('register
 Route::get('updateexe', [ExeController::class, 'updateexe'])->name('updateexe');
 
 Route::get('viewexe', [ExeController::class, 'viewexe'])->name('viewexe');
+
+
+
+
 
 Route::get('/', function () {
     return view('welcome');
