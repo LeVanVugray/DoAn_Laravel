@@ -220,11 +220,12 @@
                             @foreach($cartItems as $item)
                                 <tr data-cart-item-id="{{ $item->cart_items_id }}">
                                     <td>
-                                        <input type="checkbox" class="select-item" name="selected[]" value="{{ $item->check }}"{{$item->check == 1 ? 'checked' : ''}}>
+                                        <input type="checkbox" class="select-item" name="selected[{{ $item->cart_items_id }}]" value="1" {{$item->check == 1 ? 'checked' : ''}}>
                                     </td>
+                                    
                                     <td class="align-middle">{{ $item->name }}</td>
-                                    <td class="align-middle price-cell" data-price="{{ $item->price }}">
-                                    ${{$item->price}}
+                                    <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
+                                    ${{ $item->product ? $item->product->price : '0.00' }}
                                     </td>
                                     <td class="align-middle">{{ $item->size }}</td>
                                     <td class="align-middle">{{ $item->color }}</td>
@@ -235,8 +236,10 @@
                                                     <i class="fa fa-minus"></i>
                                                 </button>
                                             </div>
-                                            <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
+        
+                                            <input type="text" name="quantity[{{ $item->cart_items_id }}]" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
                                                 value="{{ $item->quantity }}">
+                                                
                                             <div class="input-group-btn">
                                                 <button class="btn btn-sm btn-primary btn-plus">
                                                     <i class="fa fa-plus"></i>
@@ -246,7 +249,7 @@
                                     </td>
                             <!-- Hiển thị Total = price × quantity -->
                                     <td class="align-middle total-cell">
-                                        ${{ number_format($item->price * $item->quantity, 2) }}
+                                        ${{ number_format(($item->product ? $item->product->price : 0) * $item->quantity, 2) }}
                                     </td>
                             <!-- Nút xóa khỏi giỏ hàng -->
                                     <td class="align-middle">
@@ -266,6 +269,41 @@
                     </div>
                 </form>
             </div>
+
+
+
+            <div class="col-lg-4">
+               
+
+
+
+
+
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
+                <div class="bg-light p-30 mb-5">
+                    <div class="border-bottom pb-2">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6>Tổng số tiền sản phẩm</h6>
+                            <h6>{{ number_format($total, 2) }} đ</h6>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 class="font-weight-medium">Tiền ship</h6>
+                            <h6 class="font-weight-medium">{{ number_format($shippingCost, 2) }} đ</h6>
+                        </div>
+                    </div>
+                    <div class="pt-2">
+                        <div class="d-flex justify-content-between mt-2">
+                            <h5>Tổng số tiền</h5>
+                            <h5>{{ number_format($finalTotal, 2) }} đ</h5>
+                        </div>
+                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                    </div>
+                </div>
+            </div>
+
+
+
+
         </div>
     </div>
     <!-- Cart End -->
@@ -288,31 +326,58 @@
 
 
     <script>
-   
-    // Tăng số lượng
-    document.querySelectorAll('.btn-plus').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const row = btn.closest('tr');
-            const qtyInput = row.querySelector('.quantity-input');
-            let currentQty = parseInt(qtyInput.value) || 0;
-            qtyInput.value = currentQty + 1;
-            updateRowTotal(row);
+        $(document).ready(function(){
+    // Khi giá trị số lượng thay đổi (sự kiện 'input' hoặc 'change')
+            $('.quantity-input').on('input change', function(){
+         // Lấy số lượng mới
+                var newQuantity = parseFloat($(this).val());
+                if(isNaN(newQuantity)) { 
+                newQuantity = 0;}
+         // Tìm hàng <tr> chứa input này
+                var row = $(this).closest('tr');
+         // Lấy giá từ thuộc tính data-price của cell có class '.price-cell'
+                var price = parseFloat(row.find('.price-cell').data('price'));
+                if(isNaN(price)) {
+                price = 0;}
+         // Tính tổng mới
+                var total = price * newQuantity;
+         // Cập nhật cell có class '.total-cell'
+                row.find('.total-cell').text('$' + total.toFixed(2));
         });
     });
+    </script>
 
-    // Giảm số lượng
-    document.querySelectorAll('.btn-minus').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const row = btn.closest('tr');
-            const qtyInput = row.querySelector('.quantity-input');
-            let currentQty = parseInt(qtyInput.value) || 0;
-            if (currentQty > 1) {
-                qtyInput.value = currentQty - 1;
-                updateRowTotal(row);
-            }
+
+
+
+
+    <script>
+// Tăng số lượng
+        document.querySelectorAll('.btn-plus').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const row = btn.closest('tr');
+                const qtyInput = row.querySelector('.quantity-input');
+                let currentQty = parseInt(qtyInput.value) || 0;
+                qtyInput.value = currentQty + 1;
+        // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                qtyInput.dispatchEvent(new Event('input'));
+            });
         });
-    });
-</script>
+
+// Giảm số lượng
+        document.querySelectorAll('.btn-minus').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const row = btn.closest('tr');
+                const qtyInput = row.querySelector('.quantity-input');
+                let currentQty = parseInt(qtyInput.value) || 0;
+                if (currentQty > 1) {
+                    qtyInput.value = currentQty - 1;
+            // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                    qtyInput.dispatchEvent(new Event('input'));
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use Hash;
 use Session;
+use App\Models\CartItems;
+use App\Models\Users;
 use App\Models\User;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +21,7 @@ class CartController extends Controller
         if (!$user) {
             return redirect()->route('DoAn_NhomF.index')->with('error', 'Bạn cần đăng nhập.');
         }
-        
+
         $cart_items_id = $request->get('cart_items_id');
         
         if (!$cart_items_id || !CartItems::find($cart_items_id)) {
@@ -40,13 +42,32 @@ class CartController extends Controller
             return view('DoAN_nhomF.index');
         }
 
-        $cartItems = CartItem::where('user_id', $user->id)
+        $perPage = $request->input('per_page', 15);
+        $page = $request->input('page', 1);
+
+        $cartItems = CartItems::where('user_id', $user->id)
         ->with('product')
         ->paginate($perPage, ['*'], 'page', $page);
 
-        return response()->json([
-            'cartItems' => $cartItems
-        ]);
+        $cartItemsToCal = CartItems::where('user_id', $user->id)
+        ->where('check', 1)
+        ->with('product')
+        ->get();
+
+        $total = 0;
+
+        foreach ($cartItemsToCal as $item) {
+            if ($item->product) {
+            $total += $item->product->price * $item->quantity;}
+        }   
+
+         // Tính tiền ship là 10% của tổng số tiền sản phẩm
+        $shippingCost = $total * 0.10;
+
+        // Tổng số tiền cuối cùng bằng tổng số tiền sản phẩm cộng với tiền ship
+        $finalTotal = $total + $shippingCost;
+
+        return view('cart.index', compact('cartItems', 'total', 'shippingCost', 'finalTotal'));
     }
 
 
@@ -62,7 +83,7 @@ class CartController extends Controller
     
         foreach ($quantities as $cart_item_id => $quantity) {
         
-            $cartItem = CartItem::where('user_id', $user->id)->find($cart_item_id);
+            $cartItem = CartItems::where('user_id', $user->id)->find($cart_item_id);
             if ($cartItem) {
             
                 $cartItem->quantity = (int)$quantity;

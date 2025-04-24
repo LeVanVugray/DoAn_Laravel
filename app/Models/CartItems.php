@@ -8,13 +8,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class CartItems extends Model
 {
 
+    use HasFactory; // Nếu bạn muốn sử dụng factory
+    
     protected $primaryKey = 'cart_items_id'; 
 
     protected $fillable = [
         'user_id',
         'product_id',
-        'size_id',
-        'color_id',
+        'size',
+        'color',
         'quantity',
         'check'
     ];
