@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Users;
+use App\Models\Category;
 use Hash;
 use Session;
 use Illuminate\Http\Request;
@@ -129,13 +130,53 @@ class AdminController extends Controller
         if ($keyword) {
             $products = Product::where('name', 'LIKE', "%$keyword%")
                                 ->orWhere('description', 'LIKE', "%$keyword%")
-                                ->paginate(4)
+                                ->paginate(16)
                                 ->appends(['keyword' => $keyword]);
         } else {
-            $products = Product::paginate(4);
+            $products = Product::paginate(16)->appends(['keyword' => $keyword]);
         }
     
         return view('DoAN_nhomF.admin.products', compact('products', 'keyword'));
-    }    
+    }
 
+    public function products(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $products = Product::when($keyword, function ($query, $keyword) {
+            return $query->where('name', 'like', '%' . $keyword . '%');
+        })->get();
+
+        return view('DoAN_nhomF.admin.products', compact('products', 'keyword'));
+    }
+
+    public function form_add_product() {
+        $categories = Category::all();
+        return view('DoAn_NhomF.admin.form_add_product', compact('categories'));
+    }
+
+    public function post_form_add_product(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,category_id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('products', 'public');
+        }
+
+        Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('admin.productadmin')->with('success', 'Product added successfully!');
+    }
 }   
