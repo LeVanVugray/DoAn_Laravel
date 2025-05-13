@@ -41,10 +41,22 @@
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            {{ Auth::check() ? Auth::user()->name : 'My Account' }}
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
-                            <a href="{{ route('user.createUser') }}" class="dropdown-item" type="button">Sign up</a>
+                            @if (Auth::check())
+                                <a href="{{ route('logout') }}" class="dropdown-item" type="button"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    Log out
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
+                                <a href="{{ route('user.createUser') }}" class="dropdown-item" type="button">Sign up</a>
+                            @endif
                         </div>
                     </div>
                     <div class="btn-group mx-2">

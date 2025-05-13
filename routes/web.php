@@ -104,6 +104,8 @@ Route::get('signout', [CrudUserController::class, 'signOut'])->name('signout');
 Route::get('auth/google/', [SocialAuthController::class, 'redirectToGoogle']);
 Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 
+Route::post('/logout', [CrudUserController::class, 'signOut'])->name('logout');
+
 //Forgot Password
 Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot.form');
 Route::post('forgot-password/send-code', [ForgotPasswordController::class, 'sendCode'])->name('forgot.sendCode');
