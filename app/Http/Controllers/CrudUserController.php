@@ -52,8 +52,9 @@ class CrudUserController extends Controller
         if (!User::where('email', $request->email)->exists()) {
             return redirect("login")->withErrors(['email' => 'Email not found.'])->withInput();
         }
-    
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        
+        $remember = $request->has('remember');
+        if (!Auth::attempt($request->only('email', 'password'), $remember)) {
             return redirect("login")->withErrors(['password' => 'Incorrect password.'])->withInput();
         }
     
