@@ -48,16 +48,20 @@ class CrudUserController extends Controller
             'password.required' => 'Password is required.',
             'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
         ]);
-    
+
         if (!User::where('email', $request->email)->exists()) {
             return redirect("login")->withErrors(['email' => 'Email not found.'])->withInput();
         }
-        
+
         $remember = $request->has('remember');
         if (!Auth::attempt($request->only('email', 'password'), $remember)) {
             return redirect("login")->withErrors(['password' => 'Incorrect password.'])->withInput();
         }
-    
+
+        if (Auth::user()->role === 0) {
+            return redirect()->to('/admin/indexadmin');
+        }
+
         return redirect()->route('index')->withSuccess('Signed in');
     }
 

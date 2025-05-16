@@ -46,6 +46,9 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
                             @if (Auth::check())
+                                @if(Auth::user()->role === 0)
+                                    <a href="{{ url('/admin/indexadmin') }}" class="dropdown-item">Admin</a>
+                                @endif
                                 <a href="{{ route('logout') }}" class="dropdown-item" type="button"
                                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     Log out
@@ -59,6 +62,7 @@
                             @endif
                         </div>
                     </div>
+
                     <div class="btn-group mx-2">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
                         <div class="dropdown-menu dropdown-menu-right">
