@@ -42,7 +42,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
     Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
-
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -100,7 +99,7 @@ Route::get('shop', [DoAnNhomController::class, 'shop'])->name('shop');
 Route::get('detail', [DoAnNhomController::class, 'detail'])->name('detail');
 
 
-     
+
 Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout');
 
 Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
@@ -120,7 +119,7 @@ Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('d
 
 
 // GioHang
-Route::get('/cart', [CartController::class, 'index'])->name('index');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
 Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
 

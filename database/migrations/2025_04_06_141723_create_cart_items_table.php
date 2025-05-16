@@ -13,17 +13,15 @@ return new class extends Migration
     {
         Schema::create('cart_items', function (Blueprint $table) {
             $table->id('cart_items_id');
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('product_id')->nullable();
+            $table->integer('user_id')->nullable();
+            $table->integer('product_id')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->integer('quantity')->default(0);
             
             $table->integer('check')->default(0);
 
-            // Khóa ngoại
-            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('cascade');
+           
         });
 
     }

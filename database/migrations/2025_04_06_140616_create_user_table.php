@@ -20,8 +20,7 @@ return new class extends Migration
             $table->string('address', 255)->nullable();
             $table->tinyInteger('role')->default(1); // 1 = customer
             $table->timestamps();
-});
-
+        });
     }
 
     /**
