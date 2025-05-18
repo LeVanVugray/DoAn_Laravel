@@ -19,8 +19,10 @@ return new class extends Migration
             $table->string('phone', 15)->nullable();
             $table->string('address', 255)->nullable();
             $table->tinyInteger('role')->default(1); // 1 = customer
+            $table->rememberToken();
             $table->timestamps();
-        });
+});
+
     }
 
     /**

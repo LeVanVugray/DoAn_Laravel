@@ -6,6 +6,8 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ExeController;
 use App\Http\Controllers\DoAnNhomController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\ForgotPasswordController;
 
 use App\Http\Controllers\CartController;
 
@@ -108,43 +110,30 @@ Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
 
 Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('detailsearch');
 
-
-
-
-
-
-
-
-
-
-
 // GioHang
-Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::get('cart', [CartController::class, 'index'])->name('cart');
 
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::get('cart/delete', [CartController::class, 'xoaSanPham'])->name('cartItem.Delete');
 
-Route::get('/cart/delete', [CartController::class, 'xoaSanPham'])->name('cartItem.Delete');
+Route::get('/cart/checkout/{id}', [CartController::class, 'checkoutCartItem'])
+     ->name('cart.checkout');
 
-
-
-
-
-
+Route::get('/cart-checkout/delete/{id}', [CartController::class, 'deleteCartCheckout'])
+     ->name('cart.checkout.delete');
 
 
+Route::get('auth/google/', [SocialAuthController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 
-// EXE1
-Route::get('indexexe', [ExeController::class, 'indexexe'])->name('indexexe');
+Route::post('/logout', [CrudUserController::class, 'signOut'])->name('logout');
 
-Route::get('loginexe', [ExeController::class, 'loginexe'])->name('loginexe');
+//Forgot Password
+Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot.form');
+Route::post('forgot-password/send-code', [ForgotPasswordController::class, 'sendCode'])->name('forgot.sendCode');
 
-Route::get('listexe', [ExeController::class, 'listexe'])->name('listexe');
+Route::get('verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->name('forgot.verifyCode');
+Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.resetPassword');
 
-Route::get('registerexe', [ExeController::class, 'registerexe'])->name('registerexe');
-
-Route::get('updateexe', [ExeController::class, 'updateexe'])->name('updateexe');
-
-Route::get('viewexe', [ExeController::class, 'viewexe'])->name('viewexe');
 
 
 

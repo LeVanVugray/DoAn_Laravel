@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Hash;
 use Session;
 use App\Models\CartItems;
+use App\Models\CartCheckOuts;
 use App\Models\Users;
 use App\Models\User;
 use App\Models\Product;
@@ -20,25 +21,24 @@ class CartController extends Controller
 
         $user = Auth::user();
         if (!$user) {
-            return redirect()->route('DoAn_NhomF.index')->with('error', 'Bạn cần đăng nhập.');
+            return redirect()->route('cart')->with('error', 'Bạn cần đăng nhập.');
         }
 
         $cart_items_id = $request->get('cart_items_id');
 
         if (!$cart_items_id || !CartItems::find($cart_items_id)) {
-            return redirect()->route('DoAn_NhomF.cart')->with('error', 'Sản phẩm không tồn tại.');
+            return redirect()->route('cart')->with('error', 'Sản phẩm không tồn tại.');
         }
 
         CartItems::destroy($cart_items_id);
 
-        return redirect()->route('DoAn_NhomF.cart')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
+        return redirect()->route('cart')->with('success', 'Đã xóa sản phẩm khỏi giỏ hàng.');
     }
 
 
     public function index(Request $request)
     {
-        $user = Auth::user();
-
+        $user = Auth::user()->getKey();
         if (!$user) {
             return redirect()->route('index');
         }
@@ -46,55 +46,54 @@ class CartController extends Controller
         $perPage = $request->input('per_page', 15);
         $page = $request->input('page', 1);
 
-        $cartItems = CartItems::where('user_id', $user->id)
+        $cartItems = CartItems::where('user_id', $user)
             ->with('product')
             ->paginate($perPage, ['*'], 'page', $page);
 
-        $cartItemsToCal = CartItems::where('user_id', $user->id)
-            ->where('check', 1)
+         $checkoutItems = CartCheckOuts::where('user_id', $user)
             ->with('product')
             ->get();
 
-        $total = 0;
-
-        foreach ($cartItemsToCal as $item) {
-            if ($item->product) {
-                $total += $item->product->price * $item->quantity;
-            }
-        }
-
-        // Tính tiền ship là 10% của tổng số tiền sản phẩm
-        $shippingCost = $total * 0.10;
-
-        // Tổng số tiền cuối cùng bằng tổng số tiền sản phẩm cộng với tiền ship
-        $finalTotal = $total + $shippingCost;
-
-        return view('cart', compact('cartItems', 'total', 'shippingCost', 'finalTotal'));
+        return view('DoAn_NhomF.cart.index', compact('cartItems','checkoutItems'));
     }
 
-
-    public function update(Request $request)
+     public function checkoutCartItem(Request $request, $cartItemId)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return redirect()->route('DoAn_NhomF.index')->with('error', 'Bạn cần đăng nhập.');
+        // Lấy thông tin cart item được chọn (bao gồm cả quan hệ product)
+        $cartItem = CartItems::with('product')->find($cartItemId);
+
+        if (!$cartItem) {
+            return redirect()->back()->with('error', 'Không tìm thấy cart item.');
         }
+        
+        // Lấy số lượng từ request; nếu không truyền thì mặc định dùng số lượng hiện có của cart item
+        $requestedQuantity = $request->input('quantity', $cartItem->quantity);
 
-        $quantities = $request->input('quantity', []);
-        $selected   = $request->input('selected', []);
+        $checkoutData = [
+            'user_id'    => $cartItem->user_id,
+            'product_id' => $cartItem->product_id,
+            'size'       => $cartItem->size,
+            'color'      => $cartItem->color,
+            'quantity'   => $requestedQuantity,
+        ];
 
+        // Tạo record mới trong bảng cart_check_out (model có primaryKey là cart_check_outs_id)
+        $checkoutItem = CartCheckOuts::create($checkoutData);
 
-        foreach ($quantities as $cart_item_id => $quantity) {
+        return redirect()->back()->with('success', 'Sản phẩm đã được chuyển sang Checkout với số lượng ' . $requestedQuantity);
+    }
 
-            $cartItem = CartItems::where('user_id', $user->id)->find($cart_item_id);
-            if ($cartItem) {
-
-                $cartItem->quantity = (int)$quantity;
-
-                $cartItem->check = isset($selected[$cart_item_id]) ? 1 : 0;
-                $cartItem->save();
-            }
+    public function deleteCartCheckout($id)
+    {
+        
+        $checkoutItem = CartCheckOuts::find($id);
+        
+        if (!$checkoutItem) {
+            return redirect()->back()->with('error', 'Không tìm thấy mục checkout.');
         }
-        return redirect()->route('DoAn_NhomF.cart')->with('success', 'Giỏ hàng đã được cập nhật.');
+        
+        $checkoutItem->delete();
+        
+        return redirect()->back()->with('success', 'Đã xóa sản phẩm khỏi Cart Checkout thành công.');
     }
 }

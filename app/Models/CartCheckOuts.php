@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class CartItems extends Model
+class CartCheckOuts extends Model
 {
 
     use HasFactory; // Nếu bạn muốn sử dụng factory
-    
-    protected $primaryKey = 'cart_items_id'; 
-
+    public $timestamps = false;
+    protected $primaryKey = 'cart_check_outs_id'; 
     protected $fillable = [
         'user_id',
         'product_id',

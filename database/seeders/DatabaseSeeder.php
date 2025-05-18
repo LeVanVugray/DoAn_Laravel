@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Category;
 use App\Models\Manufactures;
 use App\Models\Product;
@@ -20,54 +19,14 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         Users::create([
-            'name' => 'Nguyễn Văn A',
-            'email' => 'admin@example.com',
-            'password' => bcrypt('123456'),
-            'phone' => '0987654321',
-            'address' => '123 Đường ABC, Quận 1, TP.HCM',
-            'role' => 0, // 0 = admin (ví dụ)
-        ]);
-
-        Users::create([
-            'name' => 'Trần Thị B',
-            'email' => 'user@example.com',
-            'password' => bcrypt('123456'),
-            'phone' => '0912345678',
-            'address' => '456 Đường XYZ, Quận 3, TP.HCM',
-            'role' => 1, // 1 = customer
-        ]);
-        Users::create([
-            'name' => 'Trần Thị F',
-            'email' => 'user1@example.com',
-            'password' => bcrypt('123456'),
-            'phone' => '0912345678',
-            'address' => '456 Đường XYZ, Quận 3, TP.HCM',
-            'role' => 1, // 1 = customer
-        ]);
-        Users::create([
-            'name' => 'Trần Thị D',
-            'email' => 'user2@example.com',
-            'password' => bcrypt('123456'),
-            'phone' => '0912345678',
-            'address' => '456 Đường XYZ, Quận 3, TP.HCM',
-            'role' => 1, // 1 = customer
-        ]);
-        Users::create([
             'name' => 'Trần Thị C',
             'email' => 'user3@example.com',
-            'password' => bcrypt('123456'),
+            'password' => bcrypt('1!pPabc'),
             'phone' => '0912345678',
             'address' => '456 Đường XYZ, Quận 3, TP.HCM',
             'role' => 1, // 1 = customer
         ]);
 
-        User::factory()->create([
-            'name' => 'Vule',
-            'email' => 'vule@gmail.com',
-            'password' => bcrypt('123456'),
-            'github' => 'dfsdfsd',
-            'ale' => 7,
-        ]);
 
         // Tạo danh mục
         Category::insert([
@@ -114,5 +73,7 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+
+      
     }
 }

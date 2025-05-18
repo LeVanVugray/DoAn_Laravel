@@ -37,18 +37,32 @@ class CrudUserController extends Controller
     public function authUser(Request $request)
     {
         $request->validate([
-            'email' => 'required',
-            'password' => 'required',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+        ], [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'password.required' => 'Password is required.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
         ]);
 
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('list')
-                ->withSuccess('Signed in');
+        if (!User::where('email', $request->email)->exists()) {
+            return redirect("login")->withErrors(['email' => 'Email not found.'])->withInput();
         }
 
-        return redirect("login")->withSuccess('Login details are not valid');
+        $remember = $request->has('remember');
+        if (!Auth::attempt($request->only('email', 'password'), $remember)) {
+            return redirect("login")->withErrors(['password' => 'Incorrect password.'])->withInput();
+        }
+
+        if (Auth::user()->role === 0) {
+            return redirect()->to('/admin/indexadmin');
+        }
+
+        return redirect()->route('index')->withSuccess('Signed in');
     }
 
     /**
@@ -65,37 +79,38 @@ class CrudUserController extends Controller
     public function postUser(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-            'github' => 'required|String|max:255',
-            'ale' => 'required|integer|min:0',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'password' => [
+                'required',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+            'phone' => 'required|numeric|digits_between:10,11',
+            'address' => 'required|string|max:255',
+        ], [
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'email.unique' => 'Email already exists.',
+            'password.required' => 'Password is required.',
+            'password.confirmed' => 'Passwords do not match.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
+            'phone.required' => 'Phone number is required.',
+            'phone.numeric' => 'Phone must be a number.',
+            'phone.digits_between' => 'Phone must be between 10 and 11 digits.',
+            'address.required' => 'Address is required.',
         ]);
-
-        $data = $request->all();
-        if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
-            // Kiểm tra nếu tệp là hình ảnh hợp lệ
-            if ($avatar->isValid()) {
-                $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-                $avatar->move(public_path('img'), $avatarName);  // Lưu vào thư mục public/img/
-                $data['avatar'] = $avatarName;
-            } else {
-                return back()->withErrors(['avatar' => 'The uploaded file is not a valid image.']);
-            }
-        }
     
-        $check = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'github' => $data['github'],
-            'ale' => $data['ale'],
-            'avatar' => isset($data['avatar']) ? $data['avatar'] : null,
-            'password' => Hash::make($data['password'])
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'address' => $request->address,
         ]);
-
-        return redirect("login");
+    
+        return redirect()->route('login')->withSuccess('You can now login');
     }
 
     /**
@@ -137,46 +152,20 @@ class CrudUserController extends Controller
         $input = $request->all();
 
         $request->validate([
-            'name' => 'required',
-            'github' => 'required|String|max:255',
-            'ale' => 'required|integer|min:0',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'email' => 'required|email|unique:users,id,'.$input['id'],
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string|max:255',
 
         ]);
 
-       $user = User::find($input['id']);
-       $user->name = $input['name'];
-       $user->github = $input['github'];
-       $user->ale = $input['ale'];
-       $user->email = $input['email'];
-       $user->password = $input['password'];
-
-     // Kiểm tra và xử lý ảnh nếu có
-     if ($request->hasFile('avatar')) {
-        // Kiểm tra ảnh hợp lệ
-        $avatar = $request->file('avatar');
-        
-        // Đặt tên ảnh là thời gian hiện tại + extension
-        $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-
-        if ($user->avatar) {
-            // Đường dẫn đến ảnh cũ
-            $oldAvatarPath = public_path('img/' . $user->avatar);
-            
-            // Kiểm tra nếu ảnh cũ tồn tại, thì xóa
-            if (file_exists($oldAvatarPath)) {
-                unlink($oldAvatarPath); // Xóa ảnh cũ
-            }
-        }
-        // Lưu ảnh vào thư mục public/img/
-        $avatar->move(public_path('img'), $avatarName);
-
-        // Cập nhật avatar trong database
-        $user->avatar = $avatarName;
-    }
-       $user->save();
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
 
         return redirect("list")->withSuccess('You have signed-in');
     }
