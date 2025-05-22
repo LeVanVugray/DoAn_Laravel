@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Product;
 use App\Models\Users;
 use App\Models\Category;
@@ -12,26 +13,38 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    public function indexadmin(){
+
+    public function ordermanager()
+    {
+        return view('DoAN_nhomF.admin.ordermanager');
+    }
+
+    public function indexadmin()
+    {
         return view('DoAN_nhomF.admin.index');
     }
-    public function itemadmin(){
+    public function itemadmin()
+    {
         $products = Product::paginate(4);
         return view('DoAN_nhomF.admin.items', compact('products'));
     }
-    public function resultadmin(){
-        
+    public function resultadmin()
+    {
+
         return view('DoAN_nhomF.admin.result');
     }
-    public function revenuetadmin(){
-        
+    public function revenuetadmin()
+    {
+
         return view('DoAN_nhomF.admin.revenue');
     }
-    
-    public function sidebaradmin(){
+
+    public function sidebaradmin()
+    {
         return view('DoAN_nhomF.admin.sidebar');
     }
-    public function usersadmin(Request $request){
+    public function usersadmin(Request $request)
+    {
         // $users = Users::all();
         // $users = Users::paginate(2);
         // return view('DoAN_nhomF.admin.users',compact('users'));
@@ -39,34 +52,39 @@ class AdminController extends Controller
         // Nếu không có query, cho danh sách rỗng
         if ($keyword) {
             $users = Users::where('name', 'LIKE', "%$keyword%")
-                             ->paginate(3)
-                             ->appends(['keyword' => $keyword]);
+                ->paginate(3)
+                ->appends(['keyword' => $keyword]);
         } else {
             $users = Users::all();
             $users = Users::paginate(2);
         }
-        return view('DoAN_nhomF.admin.users',compact('users','keyword'));
+        return view('DoAN_nhomF.admin.users', compact('users', 'keyword'));
     }
 
-    public function footeradmin(){
+    public function footeradmin()
+    {
         return view('DoAN_nhomF.admin.footer');
     }
-    public function headeradmin(){
+    public function headeradmin()
+    {
         return view('DoAN_nhomF.admin.header');
     }
-    public function categoriesadmin(){
-        
+    public function categoriesadmin()
+    {
+
         return view('DoAN_nhomF.admin.categories');
     }
-    public function from_add_user(){
-        
+    public function from_add_user()
+    {
+
         return view('DoAN_nhomF.admin.from_add_user');
     }
-    public function from_update_user(Request $request){
+    public function from_update_user(Request $request)
+    {
         $user_id = $request->get('user_id');
         $user = Users::find($user_id);
 
-        return view('DoAN_nhomF.admin.from_update_user',['user' => $user]);
+        return view('DoAN_nhomF.admin.from_update_user', ['user' => $user]);
     }
     public function post_from_update_user(Request $request)
     {
@@ -99,7 +117,8 @@ class AdminController extends Controller
 
         return redirect('usersadmin')->with('success', 'Cập nhật người dùng thành công.');
     }
-    public function post_from_add_user(Request $request){
+    public function post_from_add_user(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:50',
             'email' => 'required|email|max:100|unique:user',
@@ -110,50 +129,52 @@ class AdminController extends Controller
         ]);
         $data = $request->all();
         $check = Users::create([
-        'name' => $data['name'],
-        'email' => $data['email'],
-        'phone' => $data['phone'],
-        'address' => $data['address'],
-        'password' => Hash::make($data['password']),
-        'role' => $data['role'],
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'],
+            'address' => $data['address'],
+            'password' => Hash::make($data['password']),
+            'role' => $data['role'],
         ]);
         return redirect("usersadmin");
     }
-    public function deleteUser(Request $request) {
+    public function deleteUser(Request $request)
+    {
         $user_id = $request->get('user_id');
         $user = Users::destroy($user_id);
 
         return redirect("usersadmin")->withSuccess('You have signed-in');
     }
 
-    public function productsadmin(Request $request) {
+    public function productsadmin(Request $request)
+    {
         $keyword = $request->input('keyword');
         $sort = $request->input('sort');
-    
+
         $query = Product::query();
-    
+
         if ($keyword) {
-            $query->where(function($q) use ($keyword) {
+            $query->where(function ($q) use ($keyword) {
                 $q->where('name', 'LIKE', "%$keyword%")
-                  ->orWhere('description', 'LIKE', "%$keyword%");
+                    ->orWhere('description', 'LIKE', "%$keyword%");
             });
         }
-    
+
         // Sorting logic
         if ($sort === 'price') {
             $query->orderBy('price', 'asc');
         } else {
             $query->orderBy('created_at', 'desc');
         }
-    
+
         $products = $query->paginate(16)->appends([
             'keyword' => $keyword,
             'sort' => $sort
         ]);
-    
+
         return view('DoAN_nhomF.admin.products', compact('products', 'keyword', 'sort'));
     }
-    
+
 
     public function products(Request $request)
     {
@@ -165,7 +186,8 @@ class AdminController extends Controller
         return view('DoAN_nhomF.admin.products', compact('products', 'keyword'));
     }
 
-    public function form_add_product() {
+    public function form_add_product()
+    {
         $categories = Category::all();
         return view('DoAn_NhomF.admin.form_add_product', compact('categories'));
     }
@@ -232,7 +254,8 @@ class AdminController extends Controller
         return redirect()->route('admin.productadmin')->withSuccess('Product updated successfully!');
     }
 
-    public function deleteProduct(Request $request) {
+    public function deleteProduct(Request $request)
+    {
         $product_id = $request->get('product_id');
         $product = Product::find($product_id);
 
@@ -244,4 +267,4 @@ class AdminController extends Controller
 
         return redirect()->route('admin.productadmin')->withSuccess('Product deleted successfully!');
     }
-}   
+}

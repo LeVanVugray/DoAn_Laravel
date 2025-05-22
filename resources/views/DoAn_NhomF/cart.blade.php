@@ -42,12 +42,28 @@
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            {{ Auth::check() ? Auth::user()->name : 'My Account' }}
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">Sign in</button>
-                            <button class="dropdown-item" type="button">Sign up</button>
+                            @if (Auth::check())
+                            @if(Auth::user()->role === 0)
+                            <a href="{{ url('/admin/indexadmin') }}" class="dropdown-item">Admin</a>
+                            @endif
+                            <a href="{{ route('logout') }}" class="dropdown-item" type="button"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Log out
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                            @else
+                            <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
+                            <a href="{{ route('user.createUser') }}" class="dropdown-item" type="button">Sign up</a>
+                            @endif
                         </div>
                     </div>
+
                     <div class="btn-group mx-2">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -85,13 +101,13 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form action="{{ route('search') }}" method="GET">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" name="query" class="form-control" placeholder="Search for products">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -200,81 +216,93 @@
                 <h5 class="section-title position-relative text-uppercase mb-3">
                     <span class="bg-secondary pr-3">Cart Items</span>
                 </h5>
-                <form action="{{ route('cart.update') }}" method="POST">
-                    @csrf
-                    <table class="table table-light table-borderless table-hover text-center mb-0">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>
-                                <th>
-                                <th>Products</th>
-                                <th>Price</th>
-                                <th>Size</th>
-                                <th>Color</th>
-                                <th>Quantity</th>
-                                <th>Total</th>
-                                <th>Add to Checkout</th>
-                                <th>Remove</th>
-                            </tr>
-                        </thead>
-                        <tbody class="align-middle">
-                            @foreach($cartItems as $item)
-                            <tr data-cart-item-id="{{ $item->cart_items_id }}">
-                                <td>
-                                    <input type="checkbox" class="select-item" name="selected[{{ $item->cart_items_id }}]" value="1" {{$item->check == 1 ? 'checked' : ''}}>
-                                </td>
 
-                                <td class="align-middle">{{ $item->name }}</td>
-                                <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
-                                    ${{ $item->product ? $item->product->price : '0.00' }}
-                                </td>
-                                <td class="align-middle">{{ $item->size }}</td>
-                                <td class="align-middle">{{ $item->color }}</td>
+                <table class="table table-light table-borderless table-hover text-center mb-0">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Products</th>
+                            <th>Price</th>
+                            <th>Size</th>
+                            <th>Color</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Add to Checkout</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody class="align-middle">
+                        {{-- {{ dd($cart) }} --}}
+                        @foreach($cartItems as $item)
+
+                        <tr data-cart-item-id="{{ $item->cart_item_id }}">
+                            <!-- Product info -->
+                            <td class="align-middle">
+                                <img src="{{ asset($item->product->image) }}"
+                                    alt="{{ $item->product->name }}"
+                                    style="width:50px; height:auto; margin-right: 10px;">
+                                {{ $item->product->name }}
+                            </td>
+                            <!-- Price -->
+                            <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
+                                ${{ $item->product ? number_format($item->product->price, 2) : '0.00' }}
+                            </td>
+                            <!-- Size (sử dụng quan hệ và thuộc tính size_value) -->
+                            <td class="align-middle">
+                                {{ $item->size ? $item->size->size_value : '' }}
+                            </td>
+                            <!-- Color (sử dụng quan hệ và thuộc tính color_name) -->
+                            <td class="align-middle">
+                                {{ $item->color ? $item->color->color_name : '' }}
+                            </td>
+
+                            <form action="{{ route('cart.checkout', $item->cart_item_id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn chuyển sản phẩm này sang thanh toán?');">
+                                @csrf
+                                <!-- Quantity -->
                                 <td class="align-middle">
                                     <div class="input-group quantity mx-auto" style="width: 100px;">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-minus">
+                                            <button type="button" class="btn btn-sm btn-primary btn-minus">
                                                 <i class="fa fa-minus"></i>
                                             </button>
                                         </div>
 
-                                        <input type="text" name="quantity[{{ $item->cart_items_id }}]" class="form-control form-control-sm bg-secondary border-0 text-center quantity-input"
-                                            value="{{ $item->quantity }}">
+                                        <input type="number" name="quantity-input" id="quantity-input" value="{{ $item->quantity }}" required
+                                            class="form-control form-control-sm bg-secondary border-0 text-center quantity-input">
 
                                         <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-plus">
+                                            <button type="button" class="btn btn-sm btn-primary btn-plus">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
                                     </div>
                                 </td>
-                                <!-- Hiển thị Total = price × quantity -->
+                                <!-- Total (price x quantity) -->
                                 <td class="align-middle total-cell">
                                     ${{ number_format(($item->product ? $item->product->price : 0) * $item->quantity, 2) }}
                                 </td>
-                                <!-- Nút xóa khỏi giỏ hàng -->
+
                                 <td class="align-middle">
-                                    <a href="{{ route('cartItem.Delete', ['cart_items_id' => $item->cart_items_id]) }}"
-                                        class="btn btn-sm btn-danger">
-                                        <i class="fa fa-times"></i> Remove
-                                    </a>
+                                    <button type="submit" class="btn btn-primary">Add to Checkout</button>
                                 </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <div class="text-center mt-3">
-                        <button type="submit" class="btn btn-primary">
-                            Xác nhận thay đổi dữ liệu
-                        </button>
-                    </div>
-                </form>
+                            </form>
+                            <td class="align-middle">
+                                <a href="{{ route('cartItem.Delete', $item->cart_item_id) }}"
+                                    class="btn btn-sm btn-danger">
+                                    <i class="fa fa-times"></i> Remove
+                                </a>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <!-- Phan Trang -->
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $cartItems->links() }}
+                </div>
+                <!-- Phan Trang/End -->
             </div>
 
             <div class="col-lg-4">
-
-
-
 
 
 
@@ -283,102 +311,175 @@
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Tổng số tiền sản phẩm</h6>
-                            <h6>{{ number_format($total, 2) }} đ</h6>
+                            <h6 class="font-weight-medium" id="overallTotal"></h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Tiền ship</h6>
-                            <h6 class="font-weight-medium">{{ number_format($shippingCost, 2) }} đ</h6>
+                            <h6 class="font-weight-medium" id="shippingCost"></h6>
                         </div>
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Tổng số tiền</h5>
-                            <h5>{{ number_format($finalTotal, 2) }} đ</h5>
+                            <h5></h5>
                         </div>
                         <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
                     </div>
                 </div>
             </div>
 
+            <div>
+                <button id="toggleCheckoutList" class="btn btn-primary mt-3">
+                    Xem sản phẩm đã chọn
+                </button>
+
+                <!-- Phần hiển thị danh sách sản phẩm đã thêm (mặc định ẩn đi) -->
+                <div id="checkoutList" class="mt-3" style="display: none; border: 1px solid #ddd; padding: 15px;">
+                    <h3>Sản phẩm để thanh toán</h3>
+                    <table class="table table-light table-borderless table-hover text-center mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Products</th>
+                                <th>Price</th>
+                                <th>Size</th>
+                                <th>Color</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            @foreach($cartCheckouts as $item)
+                            <tr>
+                                <td class="align-middle">
+                                    {{ $item->product->name }}
+                                </td>
+                                <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
+                                    ${{ $item->product ? number_format($item->product->price, 2) : '0.00' }}
+                                </td>
+                                <td class="align-middle">
+                                    {{ $item->size ? $item->size->size_value : '' }}
+                                </td>
+                                <td class="align-middle">
+                                    {{ $item->color ? $item->color->color_name : '' }}
+                                </td>
+                                <td class="align-middle">
+                                    {{ $item->quantity }}
+                                </td>
+                                <td class="align-middle line-total-cell">
+                                    ${{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0.00' }}
+                                </td>
+                                <td class="align-middle">
+                                    <form action="{{ route('cart.checkout.delete', $item->getKey()) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mục này không?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Cart End -->
+            <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+            <script src="{{ asset('lib/easing/easing.min.js')}}"></script>
+            <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
+            <script src="{{ asset('mail/jqBootstrapValidation.min.js')}}"></script>
+            <script src="{{ asset('mail/contact.js')}}"></script>
+            <script src="{{ asset('js/main.js')}}"></script>
 
 
+            <script>
+                document.getElementById("toggleCheckoutList").addEventListener("click", function() {
+                    var checkoutList = document.getElementById("checkoutList");
+                    if (checkoutList.style.display === "none") {
+                        checkoutList.style.display = "block";
+                    } else {
+                        checkoutList.style.display = "none";
+                    }
+                });
+            </script>
 
-        </div>
-    </div>
-    <!-- Cart End -->
+            <script>
+                $(document).ready(function() {
+                    // Khi giá trị số lượng thay đổi (sự kiện 'input' hoặc 'change')
+                    $('.quantity-input').on('input change', function() {
+                        // Lấy số lượng mới
+                        var newQuantity = parseFloat($(this).val());
+                        if (isNaN(newQuantity)) {
+                            newQuantity = 0;
+                        }
+                        // Tìm hàng <tr> chứa input này
+                        var row = $(this).closest('tr');
+                        // Lấy giá từ thuộc tính data-price của cell có class '.price-cell'
+                        var price = parseFloat(row.find('.price-cell').data('price'));
+                        if (isNaN(price)) {
+                            price = 0;
+                        }
+                        // Tính tổng mới
+                        var total = price * newQuantity;
+                        // Cập nhật cell có class '.total-cell'
+                        row.find('.total-cell').text('$' + total.toFixed(2));
+                    });
+                });
+            </script>
 
-    <!-- Phan Trang -->
-    <div class="d-flex justify-content-center">
-        {{ $cartItems->links() }}
-    </div>
-    <!-- Phan Trang/End -->
+            <script>
+                // Tăng số lượng
+                document.querySelectorAll('.btn-plus').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const row = btn.closest('tr');
+                        const qtyInput = row.querySelector('.quantity-input');
+                        let currentQty = parseInt(qtyInput.value) || 0;
+                        qtyInput.value = currentQty;
+                        // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                        qtyInput.dispatchEvent(new Event('input'));
+                    });
+                });
 
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+                // Giảm số lượng
+                document.querySelectorAll('.btn-minus').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const row = btn.closest('tr');
+                        const qtyInput = row.querySelector('.quantity-input');
+                        let currentQty = parseInt(qtyInput.value) || 0;
+                        if (currentQty >= 1) {
+                            qtyInput.value = currentQty;
+                            // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                            qtyInput.dispatchEvent(new Event('input'));
+                        }
+                    });
+                });
+            </script>
 
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('lib/easing/easing.min.js')}}"></script>
-    <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
-    <script src="{{ asset('mail/jqBootstrapValidation.min.js')}}"></script>
-    <script src="{{ asset('mail/contact.js')}}"></script>
-    <script src="{{ asset('js/main.js')}}"></script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    let overallTotal = 0;
+                    // Lấy tất cả các ô của cột "Total"
+                    const totalCells = document.querySelectorAll('.line-total-cell');
+                    totalCells.forEach(function(cell) {
+                        // Lấy nội dung của ô
+                        let text = cell.textContent.trim();
+                        // Loại bỏ ký hiệu "$" và dấu phân cách (nếu có)
+                        text = text.replace('$', '').replace(/,/g, '');
+                        const lineTotal = parseFloat(text) || 0;
+                        overallTotal += lineTotal;
+                    });
 
+                    let shippingCost = overallTotal * 0.10;
+                    document.getElementById('shippingCost').textContent = '$' + shippingCost.toFixed(2);
 
-    <script>
-        $(document).ready(function() {
-            // Khi giá trị số lượng thay đổi (sự kiện 'input' hoặc 'change')
-            $('.quantity-input').on('input change', function() {
-                // Lấy số lượng mới
-                var newQuantity = parseFloat($(this).val());
-                if (isNaN(newQuantity)) {
-                    newQuantity = 0;
-                }
-                // Tìm hàng <tr> chứa input này
-                var row = $(this).closest('tr');
-                // Lấy giá từ thuộc tính data-price của cell có class '.price-cell'
-                var price = parseFloat(row.find('.price-cell').data('price'));
-                if (isNaN(price)) {
-                    price = 0;
-                }
-                // Tính tổng mới
-                var total = price * newQuantity;
-                // Cập nhật cell có class '.total-cell'
-                row.find('.total-cell').text('$' + total.toFixed(2));
-            });
-        });
-    </script>
+                    // Cập nhật tổng chung vào phần tử có id overallTotal
+                    document.getElementById('overallTotal').textContent = '$' + overallTotal.toFixed(2);
+                });
+            </script>
 
-
-
-
-
-    <script>
-        // Tăng số lượng
-        document.querySelectorAll('.btn-plus').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const row = btn.closest('tr');
-                const qtyInput = row.querySelector('.quantity-input');
-                let currentQty = parseInt(qtyInput.value) || 0;
-                qtyInput.value = currentQty + 1;
-                // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
-                qtyInput.dispatchEvent(new Event('input'));
-            });
-        });
-
-        // Giảm số lượng
-        document.querySelectorAll('.btn-minus').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const row = btn.closest('tr');
-                const qtyInput = row.querySelector('.quantity-input');
-                let currentQty = parseInt(qtyInput.value) || 0;
-                if (currentQty > 1) {
-                    qtyInput.value = currentQty - 1;
-                    // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
-                    qtyInput.dispatchEvent(new Event('input'));
-                }
-            });
-        });
-    </script>
 </body>
 
 </html>

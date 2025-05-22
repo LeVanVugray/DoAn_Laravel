@@ -10,7 +10,7 @@ use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ForgotPasswordController;
 
 use App\Http\Controllers\CartController;
-
+use App\Http\Controllers\CartCheckoutController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,6 +44,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
     Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
+
+
+
+    Route::get('ordermanager', [AdminController::class, 'ordermanager'])->name('ordermanager');
+
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -71,6 +76,10 @@ Route::post('from_update_user', [AdminController::class, 'post_from_update_user'
 Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
 
 Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
+
+
+
+
 
 
 //
@@ -111,15 +120,17 @@ Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
 Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('detailsearch');
 
 // GioHang
-Route::get('cart', [CartController::class, 'index'])->name('cart');
+Route::get('cart', [CartController::class, 'getCartDetails'])->name('cart');
 
-Route::get('cart/delete', [CartController::class, 'xoaSanPham'])->name('cartItem.Delete');
+Route::get('/cart/item/delete/{cart_item_id}', [CartController::class, 'destroy'])
+     ->name('cartItem.Delete');
 
-Route::get('/cart/checkout/{id}', [CartController::class, 'checkoutCartItem'])
+Route::post('/cart/checkout/{cart_item_id}', [CartController::class, 'store'])
      ->name('cart.checkout');
 
-Route::get('/cart-checkout/delete/{id}', [CartController::class, 'deleteCartCheckout'])
+Route::delete('/cart/checkout/{checkout_id}', [CartCheckoutController::class, 'destroy'])
      ->name('cart.checkout.delete');
+
 
 
 Route::get('auth/google/', [SocialAuthController::class, 'redirectToGoogle']);
