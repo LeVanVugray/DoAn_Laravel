@@ -24,7 +24,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Nike Air Max',
                 'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
-                'price' => 3590000,
+                'price' => 359,
                 'category_id' => rand(1, 5),
                 'manu_id' => 1,
                 'image' => 'Nike Air Max.jpg',
@@ -34,7 +34,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Nike Dunk Low',
                 'description' => 'Thiết kế trẻ trung, phù hợp phong cách đường phố.',
-                'price' => 2990000,
+                'price' => 299,
                 'category_id' => rand(1, 5),
                 'manu_id' => 1,
                 'image' => 'Nike Dunk Low.jpg',
@@ -44,7 +44,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Nike Jordan',
                 'description' => 'Huyền thoại bóng rổ kết hợp thời trang đỉnh cao.',
-                'price' => 4500000,
+                'price' => 450,
                 'category_id' => rand(1, 5),
                 'manu_id' => 1,
                 'image' => 'Nike Jordan.jpg',
@@ -54,7 +54,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Nike Pegasus',
                 'description' => 'Đôi giày chạy bộ cân bằng giữa đệm êm và phản hồi lực.',
-                'price' => 3390000,
+                'price' => 339,
                 'category_id' => rand(1, 5),
                 'manu_id' => 1,
                 'image' => 'Nike Pegasus.jpg',
@@ -64,7 +64,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Nike React Infinity Run',
                 'description' => 'Tối ưu hỗ trợ chạy đường dài, giảm chấn thương.',
-                'price' => 3990000,
+                'price' => 399,
                 'category_id' => rand(1, 5),
                 'manu_id' => 1,
                 'image' => 'Nike React Infinity Run.jpg',
@@ -74,7 +74,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'New Balance Fresh Foam',
                 'description' => 'Công nghệ Fresh Foam mang lại cảm giác mềm mại, linh hoạt.',
-                'price' => 3690000,
+                'price' => 369,
                 'category_id' => rand(1, 5),
                 'manu_id' => 4,
                 'image' => 'New Balance Fresh Foam.jpg',
@@ -84,7 +84,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'New Balance 574',
                 'description' => 'Kiểu dáng retro kinh điển, phù hợp đi hằng ngày.',
-                'price' => 2890000,
+                'price' => 289,
                 'category_id' => rand(1, 5),
                 'manu_id' => 4,
                 'image' => 'New Balance 574.jpg',
@@ -94,7 +94,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'New Balance 997H',
                 'description' => 'Phiên bản hiện đại của dòng 997 với đế êm ái.',
-                'price' => 3090000,
+                'price' => 309,
                 'category_id' => rand(1, 5),
                 'manu_id' => 4,
                 'image' => 'New Balance 997H.jpg',
@@ -104,7 +104,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'New Balance FuelCell Rebel',
                 'description' => 'Được thiết kế cho những bước chạy tốc độ cao.',
-                'price' => 3990000,
+                'price' => 399,
                 'category_id' => rand(1, 5),
                 'manu_id' => 4,
                 'image' => 'New Balance FuelCell Rebel.jpg',
@@ -114,7 +114,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'New Balance XC-72',
                 'description' => 'Đôi giày thời trang lấy cảm hứng từ tương lai.',
-                'price' => 3490000,
+                'price' => 349,
                 'category_id' => rand(1, 5),
                 'manu_id' => 4,
                 'image' => 'New Balance XC-72.jpg',
@@ -124,7 +124,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Puma Cali',
                 'description' => 'Phong cách đơn giản, tinh tế cho giới trẻ.',
-                'price' => 2690000,
+                'price' => 269,
                 'category_id' => rand(1, 5),
                 'manu_id' => 3,
                 'image' => 'Puma Cali.jpg',
@@ -134,7 +134,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Puma Future Rider',
                 'description' => 'Thiết kế retro hiện đại, êm ái và linh hoạt.',
-                'price' => 2790000,
+                'price' => 279,
                 'category_id' => rand(1, 5),
                 'manu_id' => 3,
                 'image' => 'Puma Future Rider.jpg',
@@ -144,7 +144,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Puma Ignite',
                 'description' => 'Công nghệ Ignite Foam giúp tăng cường phản hồi lực.',
-                'price' => 2990000,
+                'price' => 299,
                 'category_id' => rand(1, 5),
                 'manu_id' => 3,
                 'image' => 'Puma Ignite.jpg',
@@ -154,7 +154,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Puma RS-X',
                 'description' => 'Đôi giày thời thượng với thiết kế hầm hố.',
-                'price' => 3090000,
+                'price' => 309,
                 'category_id' => rand(1, 5),
                 'manu_id' => 3,
                 'image' => 'Puma RS-X.jpg',
@@ -164,7 +164,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Puma Suede',
                 'description' => 'Dòng giày biểu tượng của Puma, chất liệu da lộn.',
-                'price' => 2590000,
+                'price' => 259,
                 'category_id' => rand(1, 5),
                 'manu_id' => 3,
                 'image' => 'Puma Suede.jpg',
@@ -174,7 +174,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Asics Gel-Kayano',
                 'description' => 'Giày chạy bộ hỗ trợ ổn định cao, phù hợp overpronators.',
-                'price' => 3690000,
+                'price' => 369,
                 'category_id' => rand(1, 5),
                 'manu_id' => 5,
                 'image' => 'Asics Gel-Kayano.jpg',
@@ -184,7 +184,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Asics Gel-Nimbus',
                 'description' => 'Giày chạy đường dài với đệm gel êm ái.',
-                'price' => 3790000,
+                'price' => 379,
                 'category_id' => rand(1, 5),
                 'manu_id' => 5,
                 'image' => 'Asics Gel-Nimbus.jpg',
@@ -194,7 +194,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Asics Gel-Venture 8',
                 'description' => 'Dành cho chạy trail, bền bỉ và chắc chắn.',
-                'price' => 3190000,
+                'price' => 319,
                 'category_id' => rand(1, 5),
                 'manu_id' => 5,
                 'image' => 'Asics Gel-Venture 8.jpg',
@@ -204,7 +204,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Asics Metaracer',
                 'description' => 'Giày chạy tốc độ với thiết kế tối ưu cho thi đấu.',
-                'price' => 4190000,
+                'price' => 419,
                 'category_id' => rand(1, 5),
                 'manu_id' => 5,
                 'image' => 'Asics Metaracer.jpg',
@@ -214,7 +214,7 @@ class Product_DoAnNhomF extends Seeder
             [
                 'name' => 'Asics Novablast',
                 'description' => 'Cảm giác bật nảy tốt, lý tưởng cho chạy hàng ngày.',
-                'price' => 3390000,
+                'price' => 339,
                 'category_id' => rand(1, 5),
                 'manu_id' => 5,
                 'image' => 'Asics Novablast.jpg',

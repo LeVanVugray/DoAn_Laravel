@@ -17,58 +17,59 @@
                     </div>
                     <div class="widget-content nopadding">
                         <!-- BEGIN FORM -->
-                        <form action="{{route('post_from_add_user')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
-                        @csrf
+                        <form action="{{route('post_from_add_user')}}" method="post" class="form-horizontal"
+                            enctype="multipart/form-data">
+                            @csrf
                             <div class="control-group">
                                 <label class="control-label">Username </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="name" required autofocus/> *
+                                    <input type="text" class="span11" name="name" required autofocus /> *
                                     @if ($errors->has('name'))
-                                <span class="text-danger">{{ $errors->first('name') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('name') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Email
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="email" required autofocus/> *
+                                    <input type="text" class="span11" name="email" required autofocus /> *
                                     @if ($errors->has('email'))
-                                <span class="text-danger">{{ $errors->first('email') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('email') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Password
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="password" required autofocus/> *
+                                    <input type="text" class="span11" name="password" required autofocus /> *
                                     @if ($errors->has('password'))
-                                <span class="text-danger">{{ $errors->first('password') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('password') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Phone
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="phone" required autofocus/> *
+                                    <input type="text" class="span11" name="phone" required autofocus /> *
                                     @if ($errors->has('phone'))
-                                <span class="text-danger">{{ $errors->first('phone') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('phone') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">Address
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="address" required autofocus/> *
+                                    <input type="text" class="span11" name="address" required autofocus /> *
                                     @if ($errors->has('address'))
-                                <span class="text-danger">{{ $errors->first('address') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('address') }}</span>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="control-group">
+                            <!-- <div class="control-group">
                                 <label class="control-label">Role </label>
                                 <div class="controls">
                                     <input type="text" class="span11" name="role" required autofocus/> *
@@ -76,9 +77,23 @@
                                 <span class="text-danger">{{ $errors->first('role') }}</span>
                                 @endif
                                 </div>
+                            </div> -->
+                            <div class="control-group">
+                                <label class="control-label">Role</label>
+                                <div class="controls">
+                                    <select class="span11" name="role" required autofocus>
+                                        <option value="">-- Chọn quyền --</option>
+                                        <option value="0" {{ old('role') === '0' ? 'selected' : '' }}>Admin</option>
+                                        <option value="1" {{ old('role') === '1' ? 'selected' : '' }}>Customer</option>
+                                    </select> *
+                                    @if ($errors->has('role'))
+                                    <span class="text-danger">{{ $errors->first('role') }}</span>
+                                    @endif
+                                </div>
                             </div>
-                           
-                    
+
+
+
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-success">Add</button>
                             </div>
