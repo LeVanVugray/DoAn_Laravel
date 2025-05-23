@@ -41,6 +41,9 @@
                             </option>
                         @endforeach
                     </select>
+                    @if ($errors->has('category_id'))
+                        <span class="text-danger">{{ $errors->first('category_id') }}</span>
+                    @endif
                 </div>
             </div>
 
@@ -50,6 +53,10 @@
                     <input type="file" name="image" class="span11">
                     @if ($product->image)
                         <img src="{{ asset('storage/' . $product->image) }}" width="100" class="mt-2">
+                    @endif
+                    
+                    @if ($errors->has('image'))
+                        <span class="text-danger">{{ $errors->first('image') }}</span>
                     @endif
                 </div>
             </div>

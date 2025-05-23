@@ -51,19 +51,24 @@
                                     <select name="category_id" class="span11" required>
                                         <option value="">-- Select Category --</option>
                                         @foreach($categories as $category)
-                                            <option value="{{ $category->category_id }}" {{ old('category_id') == $category->category_id ? 'selected' : '' }}>
+                                            <option value="{{ $category->category_id }}" {{ old('category_id', isset($product) ? $product->category_id : '') == $category->category_id ? 'selected' : '' }}>
                                                 {{ $category->category_name }}
                                             </option>
                                         @endforeach
                                     </select>
-                                    @error('category_id') <span class="text-danger">{{ $message }}</span> @enderror
+                                    @if ($errors->has('category_id'))
+                                        <span class="text-danger">{{ $errors->first('category_id') }}</span>
+                                    @endif
                                 </div>
                             </div>
+
                             <div class="control-group">
                                 <label class="control-label">Image</label>
                                 <div class="controls">
                                     <input type="file" name="image" class="span11" accept="image/*" />
-                                    @error('image') <span class="text-danger">{{ $message }}</span> @enderror
+                                    @if ($errors->has('image'))
+                                        <span class="text-danger">{{ $errors->first('image') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="form-actions">

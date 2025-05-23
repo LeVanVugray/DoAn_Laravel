@@ -178,6 +178,9 @@ class AdminController extends Controller
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,category_id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ], [
+            'category_id.exists' => 'The selected category no longer exists.',
+            'image.max' => 'Image size must not exceed 2MB.',
         ]);
 
         $imagePath = null;
@@ -214,6 +217,9 @@ class AdminController extends Controller
             'price' => 'required|numeric',
             'category_id' => 'required|exists:categories,category_id',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ], [
+            'category_id.exists' => 'The selected category no longer exists.',
+            'image.max' => 'Image size must not exceed 2MB.',
         ]);
 
         $product = Product::find($request->product_id);
