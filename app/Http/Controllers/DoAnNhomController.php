@@ -36,6 +36,7 @@ class DoAnNhomController extends Controller
         // Lấy product_id từ query string
         $products = Product::take(4)->get();
         $product_id = $request->input('product_id');
+        $product = Product::find($product_id);
         return view('DoAN_nhomF.detailsearch', compact('products','product'));  
     }
     public function search(Request $request)
