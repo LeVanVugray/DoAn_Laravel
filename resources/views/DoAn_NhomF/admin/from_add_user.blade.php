@@ -85,11 +85,15 @@
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label">Role </label>
+                                <label class="control-label">Role</label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="role" required autofocus /> * <br>
+                                    <select class="span11" name="role" required autofocus>
+                                        <option value="">-- Chọn quyền --</option>
+                                        <option value="0" {{ old('role') === '0' ? 'selected' : '' }}>Admin</option>
+                                        <option value="1" {{ old('role') === '1' ? 'selected' : '' }}>Customer</option>
+                                    </select> * <br>
                                     @if ($errors->has('role'))
-                                    <span  style="color: red;"  class="text-danger">{{ $errors->first('role') }}</span>
+                                    <span style="color: red;" class="text-danger">{{ $errors->first('role') }}</span>
                                     @endif
                                 </div>
                             </div>

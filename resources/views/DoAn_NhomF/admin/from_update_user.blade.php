@@ -86,12 +86,16 @@
                                 </div>
                             </div>
                             <div class="control-group">
-                                <label class="control-label">Role </label>
+                                <label class="control-label">Role</label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="role" value="{{ $user->role }}" required autofocus/> *
+                                    <select class="span11" name="role" required autofocus>
+                                        <option value="">-- Chọn quyền --</option>
+                                        <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Admin</option>
+                                        <option value="1" {{ $user->role == 1 ? 'selected' : '' }}>Customer</option>
+                                    </select> *<br>
                                     @if ($errors->has('role'))
-                                <span class="text-danger">{{ $errors->first('role') }}</span>
-                                @endif
+                                    <span class="text-danger">{{ $errors->first('role') }}</span>
+                                    @endif
                                 </div>
                             </div>
                             <div class="form-actions">

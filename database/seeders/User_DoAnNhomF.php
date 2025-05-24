@@ -19,28 +19,32 @@ class User_DoAnNhomF extends Seeder
         //Truncate table
         DB::table("user")->insert([
             [
-                "name" => "Nguyễn Văn A",
-                "email" => "admin@example.com",
+                "name" => "Lê Văn Vũ",
+                "email" => "admin@gmail.com",
                 "password" => bcrypt("123456"),
                 "phone" => "0987654321",
                 "address" => "123 Đường ABC, Quận 1, TP.HCM",
                 "role" => 0, // 0 = admin (ví dụ)
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ]);
 
         for($i = 2; $i < self::MAX_RECORDS; $i++) {
+            $randomLetter = chr(rand(65, 90)); // 'A' = 65, 'Z' = 90
             DB::table("user")->insert([
                 [
-                    "name" => "Nguyễn Văn A",
-                    "email" => "user{$i}@example.com",
+                    "name" => "Nguyễn Văn {$randomLetter}",
+                    "email" => "user{$i}@gmail.com",
                     "password" => bcrypt("123456"),
                     "phone" => "098765432{$i}",
                     "address" => "123 Đường ABC, Quận 1, TP.HCM",
-                    "role" => rand(1,2), // 0 = admin (ví dụ)
+                    "role" => rand(0,1), // 0 = admin (ví dụ)
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]
             ]);
         }
-
         // user::create([
         //     "name" => "Nguyễn Văn A",
         //     "email" => "admin@example.com",
