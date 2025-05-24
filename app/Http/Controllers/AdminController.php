@@ -220,7 +220,7 @@ class AdminController extends Controller
         $user = Users::destroy($user_id);
         if(!$user){
             return redirect()->route('usersadmin')->withErrors([
-                'msg' => 'Không Người Tên Này Để Xóa Hãy Load Lại trang'
+                'msg' => 'Không có Người Tên Này Để Xóa Hãy Load Lại trang'
             ])
             ->withInput(); // Để giữ lại input cũ;
         }
