@@ -39,6 +39,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
 
+
     Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
     Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
@@ -68,6 +69,7 @@ Route::get('from_update_user', [AdminController::class, 'from_update_user'])->na
 Route::post('from_update_user', [AdminController::class, 'post_from_update_user'])->name('post_from_update_user');
 
 Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
+
 
 Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
