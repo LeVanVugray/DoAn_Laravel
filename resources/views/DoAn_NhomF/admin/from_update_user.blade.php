@@ -19,11 +19,22 @@
                         <span class="icon"><i class="icon-align-justify"></i></span>
                         <h5>Item info</h5>
                     </div>
+                    @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 15px 20px;">
+                        <strong>Đã xảy ra lỗi:</strong>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="widget-content nopadding">
                         <!-- BEGIN FORM -->
                         <form action="{{route('post_from_update_user')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
                          
                             @csrf
+                            <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
                             <input type="hidden" name="user_id" value="{{ $user->user_id }}">
                             <div class="control-group">
                                 <label class="control-label">Username </label>
@@ -48,7 +59,7 @@
                                 <label class="control-label">Password
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="password"  required autofocus/> *
+                                    <input type="text" class="span11" name="password"  value="{{ $user->password }}" required autofocus/> *
                                     @if ($errors->has('password'))
                                 <span class="text-danger">{{ $errors->first('password') }}</span>
                                 @endif

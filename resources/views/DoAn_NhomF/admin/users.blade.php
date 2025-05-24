@@ -26,12 +26,28 @@
         <div class="row-fluid">
             <div class="span12">
                 <div class="widget-box">
+                @if(session('success'))
+                        <div class="alert alert-success" style="margin: 10px;">
+                            {{ session('success') }}
+                        </div>
+                        @endif
+                        @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 15px 20px;">
+                        <strong>Đã xảy ra lỗi:</strong>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
                     <div class="widget-title">
                         <span class="icon">
                             <a href="{{route('admin.from_add_user')}}">
                                 <i class="icon-plus"></i>
                             </a>
                         </span>
+                        
                         <h5>Users</h5>
                     </div>
 
@@ -62,9 +78,6 @@
                                             <!-- Form để xóa user -->
                                             <a class="btn btn-danger btn-mini" href="{{route('admin.deleteUser',['user_id'=>$user->user_id])}}" class="btn btn-success btn-mini">Delete</a>
 
-                                            <!-- <form action="{{route('admin.deleteUser',['user_id'=>$user->user_id])}}" style="display:inline-block;">
-                                                <input type="submit" class="btn btn-danger btn-mini" value="Delete">
-                                            </form> -->
                                         </td>
                                     </tr>
                             </tbody>
