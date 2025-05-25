@@ -37,5 +37,6 @@
                 <i class="icon-th-list"></i> <span>Products</span>
             </a>
         </li>
+        
     </ul>
 </div>

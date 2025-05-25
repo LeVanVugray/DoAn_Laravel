@@ -15,11 +15,18 @@ class Order extends Model
         'total_amount',
         'status',
         'shipped_at',
+        'payment',
     ];
 
-    // Quan hệ: Một đơn hàng có nhiều đơn hàng con
+   // Quan hệ một-nhiều với OrderItem
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'order_id');
+    }
+
+    // Quan hệ một-nhiều với User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 }

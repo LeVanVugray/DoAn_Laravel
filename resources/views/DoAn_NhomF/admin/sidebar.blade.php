@@ -32,5 +32,10 @@
                 <span>Revenue</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route('admin.orders.index') }}">
+                <i class="icon-th-list"></i> <span>Orders</span>
+            </a>
+        </li>
     </ul>
 </div>

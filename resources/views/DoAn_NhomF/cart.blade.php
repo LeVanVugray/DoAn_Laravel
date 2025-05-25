@@ -297,7 +297,7 @@
                 </table>
                 <!-- Phan Trang -->
                 <div class="d-flex justify-content-center mt-3">
-                    {{ $cartItems->links() }}
+                    {{ $cartItems->links("pagination::bootstrap-4") }}
                 </div>
                 <!-- Phan Trang/End -->
             </div>

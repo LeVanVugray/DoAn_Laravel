@@ -1,0 +1,72 @@
+<div id="content">
+    <div class="container mt-5">
+        <!-- Tiêu đề trang -->
+        <h1 class="mb-4">Quản lý đơn hàng</h1>
+
+        <!-- Thông tin đơn hàng -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <!-- Dòng đầu: Mã đơn hàng và Mã người dùng -->
+                <div class="row mb-2">
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Mã đơn hàng:</strong> 1001</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Mã người dùng:</strong> 456</p>
+                    </div>
+                </div>
+                <!-- Dòng thứ 2: Tổng tiền và Ngày giao hàng -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Tổng tiền:</strong> 1,000,000 VND</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-0"><strong>Ngày giao hàng:</strong> Chưa giao hàng</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danh sách sản phẩm -->
+        <div class="card mb-4">
+            <div class="card-header">
+                Danh sách Sản phẩm
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Mã sản phẩm</th>
+                            <th>Mã Size</th>
+                            <th>Mã Color</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2001</td>
+                            <td>M</td>
+                            <td>Đỏ</td>
+                            <td>2</td>
+                            <td>500,000 VND</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Trạng thái đơn hàng đặt dưới danh sách sản phẩm -->
+        <div class="card">
+            <div class="card-body">
+                <p class="mb-0"><strong>Trạng thái:</strong> Chờ xử lý</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+
+

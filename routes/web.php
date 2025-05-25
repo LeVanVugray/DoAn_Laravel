@@ -11,6 +11,7 @@ use App\Http\Controllers\ForgotPasswordController;
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartCheckoutController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,31 +25,39 @@ use App\Http\Controllers\CartCheckoutController;
 */
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
+     Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
 
-    Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
+     Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
 
-    Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
-
-
-    Route::get('itemadmin', [AdminController::class, 'itemadmin'])->name('itemadmin');
-
-    Route::get('from_add_user', [AdminController::class, 'from_add_user'])->name('from_add_user');
-    Route::post('from_add_user', [AdminController::class, 'post_from_add_user'])->name('post_from_add_user');
-
-    Route::get('from_update_user', [AdminController::class, 'from_update_user'])->name('from_update_user');
-    Route::post('from_update_user', [AdminController::class, 'post_from_update_user'])->name('post_from_update_user');
-
-    Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
-
-    Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
-
-    Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
+     Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
 
 
+     Route::get('itemadmin', [AdminController::class, 'itemadmin'])->name('itemadmin');
 
-    Route::get('ordermanager', [AdminController::class, 'ordermanager'])->name('ordermanager');
+     Route::get('from_add_user', [AdminController::class, 'from_add_user'])->name('from_add_user');
+     Route::post('from_add_user', [AdminController::class, 'post_from_add_user'])->name('post_from_add_user');
 
+     Route::get('from_update_user', [AdminController::class, 'from_update_user'])->name('from_update_user');
+     Route::post('from_update_user', [AdminController::class, 'post_from_update_user'])->name('post_from_update_user');
+
+     Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
+
+     Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
+
+     Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
+
+
+     Route::get('orders', [OrderController::class, 'index'])
+          ->name('orders.index');
+
+     Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
+          ->name('orders.showShippedOrder');
+
+     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
+          ->name('orders.confirm');
+
+     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+          ->name('orders.cancel');
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -77,7 +86,17 @@ Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUs
 
 Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
 
+Route::get('orders', [OrderController::class, 'index'])
+     ->name('orders.index');
 
+Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
+     ->name('orders.showShippedOrder');
+
+Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
+     ->name('orders.confirm');
+
+Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+     ->name('orders.cancel');
 
 
 
@@ -151,5 +170,5 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 
 
 Route::get('/', function () {
-    return view('welcome');
+     return view('welcome');
 });
