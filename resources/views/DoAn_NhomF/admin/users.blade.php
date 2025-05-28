@@ -56,7 +56,7 @@
                                         <td>{{$user->email}}</td>
                                         <td>{{$user->password}}</td>
                                         <td>{{$user->address}}</td>
-                                        <td>{{$user->role==0 ? 'Admin' : 'Khách Hàng'}}</td>
+                                        <td>{{$user->role==0 ? 'Admin' : 'Customer'}}</td>
                                         <td>
                                             <a href="{{route('admin.from_update_user',['user_id'=>$user->user_id])}}" class="btn btn-success btn-mini">Edit</a>
                                             <!-- Form để xóa user -->

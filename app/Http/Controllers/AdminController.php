@@ -34,12 +34,22 @@ class AdminController extends Controller
         $keyword = $request->input('keyword');
         // Nếu không có query, cho danh sách rỗng
         if ($keyword) {
-            $users = Users::where('name', 'LIKE', "%$keyword%")
-                             ->paginate(3)
-                             ->appends(['keyword' => $keyword]);
+            $users = Users::where(function ($query) use ($keyword) {
+                // Tìm theo tên
+                $query->where('name', 'LIKE', "%$keyword%");
+    
+                // Tìm theo role
+                if (strtolower($keyword) === "admin") {
+                    $query->orWhere('role', 0);
+                } elseif (strtolower($keyword) === 'customer') {
+                    $query->orWhere('role', 1);
+                }
+            })
+            ->paginate(3)
+            ->appends(['keyword' => $keyword]);
         } else {
             $users = Users::all();
-            $users = Users::paginate(2);
+            $users = Users::paginate(5);
         }
         return view('DoAN_nhomF.admin.users',compact('users','keyword'));
     }
