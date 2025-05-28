@@ -14,18 +14,38 @@
                 <div class="widget-box">
                     <div class="widget-title"> <span class="icon"> <i class="icon-align-justify"></i> </span>
                         <h5>Item info</h5>
+
                     </div>
+                    @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 15px 20px;">
+                        <strong>Đã xảy ra lỗi:</strong>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+                    @if ($errors->has('msg'))
+                    <div class="alert alert-danger" style="margin: 10px;">
+                        {{ $errors->first('msg') }}
+                    </div>
+                    @endif
+
+
                     <div class="widget-content nopadding">
                         <!-- BEGIN FORM -->
                         <form action="{{route('post_from_add_user')}}" method="post" class="form-horizontal"
                             enctype="multipart/form-data">
                             @csrf
+
                             <div class="control-group">
                                 <label class="control-label">Username </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="name" required autofocus /> *
+                                    <input type="text" class="span11" name="name" value="{{ old('name') }}" required
+                                        autofocus /> * <br>
                                     @if ($errors->has('name'))
-                                    <span class="text-danger">{{ $errors->first('name') }}</span>
+                                    <span style="color: red;" class="text-danger">{{ $errors->first('name') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -33,9 +53,10 @@
                                 <label class="control-label">Email
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="email" required autofocus /> *
+                                    <input type="text" class="span11" name="email" value="{{ old('email') }}" required
+                                        autofocus /> * <br>
                                     @if ($errors->has('email'))
-                                    <span class="text-danger">{{ $errors->first('email') }}</span>
+                                    <span style="color: red;" class="text-danger ">{{ $errors->first('email') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -43,9 +64,11 @@
                                 <label class="control-label">Password
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="password" required autofocus /> *
+                                    <input type="text" class="span11" name="password" value="{{ old('password') }}"
+                                        required autofocus /> * <br>
                                     @if ($errors->has('password'))
-                                    <span class="text-danger">{{ $errors->first('password') }}</span>
+                                    <span style="color: red;"
+                                        class="text-danger">{{ $errors->first('password') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -53,9 +76,10 @@
                                 <label class="control-label">Phone
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="phone" required autofocus /> *
+                                    <input type="text" class="span11" name="phone" value="{{ old('phone') }}" required
+                                        autofocus /> * <br>
                                     @if ($errors->has('phone'))
-                                    <span class="text-danger">{{ $errors->first('phone') }}</span>
+                                    <span style="color: red;" class="text-danger">{{ $errors->first('phone') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -63,9 +87,10 @@
                                 <label class="control-label">Address
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="address" required autofocus /> *
+                                    <input type="text" class="span11" name="address" value="{{ old('address') }}"
+                                        required autofocus /> * <br>
                                     @if ($errors->has('address'))
-                                    <span class="text-danger">{{ $errors->first('address') }}</span>
+                                    <span style="color: red;" class="text-danger">{{ $errors->first('address') }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -74,7 +99,7 @@
                                 <div class="controls">
                                     <input type="text" class="span11" name="role" required autofocus/> *
                                     @if ($errors->has('role'))
-                                <span class="text-danger">{{ $errors->first('role') }}</span>
+                                <spanstyle="color: red;"  class="text-danger">{{ $errors->first('role') }}</span>
                                 @endif
                                 </div>
                             </div> -->
@@ -85,9 +110,9 @@
                                         <option value="">-- Chọn quyền --</option>
                                         <option value="0" {{ old('role') === '0' ? 'selected' : '' }}>Admin</option>
                                         <option value="1" {{ old('role') === '1' ? 'selected' : '' }}>Customer</option>
-                                    </select> *
+                                    </select> * <br>
                                     @if ($errors->has('role'))
-                                    <span class="text-danger">{{ $errors->first('role') }}</span>
+                                    <span style="color: red;" class="text-danger">{{ $errors->first('role') }}</span>
                                     @endif
                                 </div>
                             </div>

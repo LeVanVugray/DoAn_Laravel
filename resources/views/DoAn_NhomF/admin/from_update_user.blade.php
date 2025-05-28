@@ -20,17 +20,29 @@
                         <h5>Item info</h5>
                     </div>
                     <div class="widget-content nopadding">
+                    @if ($errors->any())
+                    <div class="alert alert-danger" style="margin: 15px 20px;">
+                        <strong>Đã xảy ra lỗi:</strong>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+                        
                         <!-- BEGIN FORM -->
                         <form action="{{route('post_from_update_user')}}" method="post" class="form-horizontal"
                             enctype="multipart/form-data">
 
                             @csrf
+                            <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
                             <input type="hidden" name="user_id" value="{{ $user->user_id }}">
                             <div class="control-group">
                                 <label class="control-label">Username </label>
                                 <div class="controls">
                                     <input type="text" class="span11" name="name" value="{{ $user->name }}" required
-                                        autofocus /> *
+                                        autofocus /> *<br>
                                     @if ($errors->has('name'))
                                     <span class="text-danger">{{ $errors->first('name') }}</span>
                                     @endif
@@ -41,7 +53,7 @@
                                 </label>
                                 <div class="controls">
                                     <input type="text" class="span11" name="email" value="{{ $user->email }}" required
-                                        autofocus /> *
+                                        autofocus /> *<br>
                                     @if ($errors->has('email'))
                                     <span class="text-danger">{{ $errors->first('email') }}</span>
                                     @endif
@@ -51,7 +63,8 @@
                                 <label class="control-label">Password
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="password" required autofocus /> *
+                                    <input type="text" class="span11" value="{{ $user->password }}" name="password"
+                                        required autofocus /> *<br>
                                     @if ($errors->has('password'))
                                     <span class="text-danger">{{ $errors->first('password') }}</span>
                                     @endif
@@ -62,7 +75,7 @@
                                 </label>
                                 <div class="controls">
                                     <input type="text" class="span11" value="{{ $user->phone }}" name="phone" required
-                                        autofocus /> *
+                                        autofocus /> *<br>
                                     @if ($errors->has('phone'))
                                     <span class="text-danger">{{ $errors->first('phone') }}</span>
                                     @endif
@@ -73,21 +86,12 @@
                                 </label>
                                 <div class="controls">
                                     <input type="text" class="span11" name="address" value="{{ $user->address }}"
-                                        required autofocus /> *
+                                        required autofocus /> *<br>
                                     @if ($errors->has('address'))
                                     <span class="text-danger">{{ $errors->first('address') }}</span>
                                     @endif
                                 </div>
                             </div>
-                            <!-- <div class="control-group">
-                                <label class="control-label">Role </label>
-                                <div class="controls">
-                                    <input type="text" class="span11" name="role" value="{{ $user->role }}" required autofocus/> *
-                                    @if ($errors->has('role'))
-                                <span class="text-danger">{{ $errors->first('role') }}</span>
-                                @endif
-                                </div>
-                            </div> -->
                             <div class="control-group">
                                 <label class="control-label">Role</label>
                                 <div class="controls">
@@ -95,7 +99,7 @@
                                         <option value="">-- Chọn quyền --</option>
                                         <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Admin</option>
                                         <option value="1" {{ $user->role == 1 ? 'selected' : '' }}>Customer</option>
-                                    </select> *
+                                    </select> *<br>
                                     @if ($errors->has('role'))
                                     <span class="text-danger">{{ $errors->first('role') }}</span>
                                     @endif
