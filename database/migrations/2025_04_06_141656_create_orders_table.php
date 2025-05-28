@@ -22,7 +22,7 @@ return new class extends Migration
             // Khóa ngoại
             $table->foreign('user_id')
             ->references('user_id')
-            ->on('users')
+            ->on('user')
             ->onDelete('set null');
             
         });

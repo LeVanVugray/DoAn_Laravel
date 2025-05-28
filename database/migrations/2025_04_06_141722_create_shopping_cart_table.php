@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps(); // Thời gian tạo và cập nhật
             // Khóa Ngoại
-            $table->foreign('user_id')->references('user_id')->on('users')->onDelete('set null');
+            $table->foreign('user_id')->references('user_id')->on('user')->onDelete('set null');
 
         });
     }
