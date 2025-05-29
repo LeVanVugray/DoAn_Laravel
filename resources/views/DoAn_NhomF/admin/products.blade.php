@@ -104,7 +104,7 @@
         <div class="product-grid">
             @foreach ($products as $product)
                 <div class="product-card">
-                    <img src="{{ $product->image ? asset('storage/' . $product->image) : asset('img/no-image.png') }}" alt="Product Image">
+                    <img src="{{ $product->image ? asset('AnhDoAn/' . $product->image) : asset('img/no-image.png') }}" alt="Product Image">
                     <div class="product-info">
                         <div class="product-name">{{ $product->name }}</div>
                         <div class="product-description">
