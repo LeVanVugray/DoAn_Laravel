@@ -12,6 +12,7 @@ use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartCheckoutController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -150,6 +151,7 @@ Route::post('/cart/checkout/{cart_item_id}', [CartController::class, 'store'])
 Route::delete('/cart/checkout/{checkout_id}', [CartCheckoutController::class, 'destroy'])
      ->name('cart.checkout.delete');
 
+Route::post('/check-voucher', [VoucherController::class, 'checkVoucher']);
 
 
 Route::get('auth/google/', [SocialAuthController::class, 'redirectToGoogle']);

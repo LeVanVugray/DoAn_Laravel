@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 class Product extends Model
 {
     use HasFactory;
@@ -31,6 +33,10 @@ class Product extends Model
     }
     public function manufacture()
     {
-        return $this->belongsTo(manufacture::class, 'manu_id', 'manu_id');
+        return $this->belongsTo(manufactures::class, 'manu_id', 'manu_id');
+    }
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'product_id', 'product_id');
     }
 }

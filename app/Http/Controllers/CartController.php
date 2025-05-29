@@ -14,23 +14,19 @@ class CartController extends Controller
     public function getCartDetails(Request $request)
     {
         // Kiểm tra người dùng đã đăng nhập chưa
+        
         if (!Auth::check()) {
             return redirect()->route('index')
                 ->with('error', 'Người dùng chưa đăng nhập.');
         }
-
+        
         // Lấy thông tin người dùng từ authentication.
         $user = Auth::user();
 
-        // Lấy giỏ hàng của người dùng dựa theo user_id.
-        $cart = ShoppingCart::where('user_id', $user->user_id)->first();
-
-        // Nếu không tìm thấy giỏ hàng, truyền thông báo xuống view.
-        if (!$cart) {
-            $message = 'Không tìm thấy giỏ hàng cho người dùng này';
-            return view('DoAn_NhomF.cart', compact('message'));
-        }
-
+        $cart = ShoppingCart::firstOrCreate(
+            ['user_id' => $user->user_id]
+        );
+      
         // Lấy các mục giỏ hàng với eager loading và phân trang (vd: 5 mục mỗi trang).
         $cartItems = $cart->cartItems()
             ->with(['product', 'color', 'size'])
@@ -108,8 +104,6 @@ class CartController extends Controller
                 'color_id'   => $cartItem->color_id,
                 'quantity'   => $selectedQuantity,
             ]);
-
-           
         });
 
         return redirect()->route('cart')

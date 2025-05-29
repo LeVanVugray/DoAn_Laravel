@@ -231,7 +231,6 @@
                         </tr>
                     </thead>
                     <tbody class="align-middle">
-                        {{-- {{ dd($cart) }} --}}
                         @foreach($cartItems as $item)
 
                         <tr data-cart-item-id="{{ $item->cart_item_id }}">
@@ -244,7 +243,7 @@
                             </td>
                             <!-- Price -->
                             <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
-                                ${{ $item->product ? number_format($item->product->price, 2) : '0.00' }}
+                                ${{ $item->product ? number_format($item->product->price, 2) : '0' }}
                             </td>
                             <!-- Size (sử dụng quan hệ và thuộc tính size_value) -->
                             <td class="align-middle">
@@ -308,23 +307,44 @@
 
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
                 <div class="bg-light p-30 mb-5">
+
+                    <div class="input-group">
+                        <input type="text" class="form-control border-0 p-4" id="voucherCode" placeholder="Coupon Code">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" onclick="checkVoucher()">Apply Coupon</button>
+                        </div>
+                    </div>
+
+
+                    <!-- Phần hiển thị tổng số tiền sản phẩm và giảm giá -->
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Tổng số tiền sản phẩm</h6>
-                            <h6 class="font-weight-medium" id="overallTotal"></h6>
+                            <!-- Giả sử server đã cập nhật giá trị cho tổng sản phẩm -->
+                            <h6 class="font-weight-medium" id="overallTotal">12000</h6>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Tiền ship</h6>
-                            <h6 class="font-weight-medium" id="shippingCost"></h6>
+                            <h6 class="font-weight-medium">
+                                Giảm giá:
+                                <p id="voucherMessage" style="display:inline;"></p>
+                            </h6>
                         </div>
                     </div>
+
+                    <!-- Hidden input để lưu giá trị giảm giá, được cập nhật khi voucher được áp dụng -->
+                    <input type="hidden" id="discountAmount" value="0">
+
+                    <!-- Phần nút Proceed to Checkout -->
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Tổng số tiền</h5>
-                            <h5></h5>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
+                        <!-- Sử dụng nút để xử lý chuyển hướng qua JavaScript -->
+                        <button id="proceedCheckout" class="btn btn-block btn-primary font-weight-bold my-3 py-3" style="color: black;">
+                            Procced to Checkout
+                        </button>
                     </div>
+
                 </div>
             </div>
 
@@ -355,7 +375,7 @@
                                     {{ $item->product->name }}
                                 </td>
                                 <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
-                                    ${{ $item->product ? number_format($item->product->price, 2) : '0.00' }}
+                                    ${{ $item->product ? number_format($item->product->price, 2) : '0' }}
                                 </td>
                                 <td class="align-middle">
                                     {{ $item->size ? $item->size->size_value : '' }}
@@ -466,19 +486,82 @@
                     totalCells.forEach(function(cell) {
                         // Lấy nội dung của ô
                         let text = cell.textContent.trim();
-                        // Loại bỏ ký hiệu "$" và dấu phân cách (nếu có)
-                        text = text.replace('$', '').replace(/,/g, '');
+
+                        text = text.replace('vnd', '').replace(/,/g, '');
                         const lineTotal = parseFloat(text) || 0;
                         overallTotal += lineTotal;
                     });
 
-                    let shippingCost = overallTotal * 0.10;
-                    document.getElementById('shippingCost').textContent = '$' + shippingCost.toFixed(2);
-
                     // Cập nhật tổng chung vào phần tử có id overallTotal
-                    document.getElementById('overallTotal').textContent = '$' + overallTotal.toFixed(2);
+                    document.getElementById('overallTotal').textContent = overallTotal + " vnd";
                 });
             </script>
+
+            <script>
+                function checkVoucher() {
+                    // Lấy mã voucher từ input
+                    let code = document.getElementById('voucherCode').value;
+
+                    // Lấy giá trị tổng đơn hàng từ phần tử có id "overallTotal"
+                    // Ví dụ: nếu text là "12000 vnd"
+                    let overallTotalText = document.getElementById('overallTotal').innerText;
+                    // Loại bỏ tất cả các ký tự không phải số, ví dụ "12000 vnd" -> "12000"
+                    let overallTotal = parseFloat(overallTotalText.replace(/[^0-9]/g, ''));
+
+                    fetch('/check-voucher', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                code: code,
+                                order_total: overallTotal
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Lấy phần tử ghi thông báo voucher
+                            let voucherMessageEl = document.getElementById('voucherMessage');
+                            // Nếu thành công, hiển thị thông báo kèm số tiền giảm
+                            if (data.success) {
+                                voucherMessageEl.innerText = data.discount_amount + " VND";
+                            } else {
+                                voucherMessageEl.innerText = data.error;
+                            }
+                        })
+                        .catch(error => console.error('Lỗi:', error));
+                }
+            </script>
+
+            <script>
+                // Xử lý sự kiện khi nhấn nút "Procced to Checkout"
+                document.getElementById('proceedCheckout').addEventListener('click', function(e) {
+                    e.preventDefault();
+
+                    // Lấy tổng số tiền sản phẩm từ phần tử overallTotal
+                    let overallTotalText = document.getElementById('overallTotal').innerText;
+                    // Chuyển đổi thành số (giả sử chỉ chứa số, hoặc hãy lọc bỏ ký tự không phải số nếu cần)
+                    let productTotal = parseFloat(overallTotalText.replace(/[^0-9.]/g, '')) || 0;
+
+                    // Lấy giá trị giảm giá từ input ẩn
+                    let discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+
+                    // Tính tổng số tiền sau khi trừ giảm giá
+                    let finalTotal = productTotal - discount;
+                    if (finalTotal < 0) finalTotal = 0;
+
+                    // Xây dựng URL đến trang checkout và đính kèm các tham số qua query string
+                    let url = "{{ route('checkout') }}";
+                    url += '?productTotal=' + encodeURIComponent(productTotal);
+                    url += '&discount=' + encodeURIComponent(discount);
+                    url += '&finalTotal=' + encodeURIComponent(finalTotal);
+
+                    // Chuyển hướng sang route checkout
+                    window.location.href = url;
+                });
+            </script>
+
 
 </body>
 

@@ -15,12 +15,13 @@ class ClearOldDataSeeder extends Seeder
         DB::table('products')->delete();
         DB::table('categories')->delete();
         DB::table('manufactures')->delete();
+        DB::table('colors')->delete();
         DB::table('users')->delete();
         DB::table('user')->delete();
+
         // Các bảng khác có thể xóa tại đây
         
         // Bật lại các ràng buộc khóa ngoại
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }
-
