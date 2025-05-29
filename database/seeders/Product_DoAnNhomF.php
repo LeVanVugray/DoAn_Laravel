@@ -21,6 +21,59 @@ class Product_DoAnNhomF extends Seeder
         // Thêm dữ liệu sản phẩm với manu_id tương ứng:
         // 1 => Nike, 2 => Adidas, 3 => Puma, 4 => New Balance, 5 => Asics
         DB::table('products')->insert([
+
+            [
+                'name' => 'New Balance 9943',
+                'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
+                'price' => 3590000,
+                'category_id' => rand(1, 5),
+                'manu_id' => 4,
+                'image' => 'New Balance 9943.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Adidas while',
+                'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
+                'price' => 3590000,
+                'category_id' => rand(1, 5),
+                'manu_id' => 2,
+                'image' => 'Adidas while.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Puma zakaria',
+                'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
+                'price' => 3590000,
+                'category_id' => rand(1, 5),
+                'manu_id' => 3,
+                'image' => 'Puma zakaria.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'Puma blue knows',
+                'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
+                'price' => 3590000,
+                'category_id' => rand(1, 5),
+                'manu_id' => 3,
+                'image' => 'Puma blue knows.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'name' => 'asics purple',
+                'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
+                'price' => 3590000,
+                'category_id' => rand(1, 5),
+                'manu_id' => 5,
+                'image' => 'asics purple.jpg',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            ///
+
             [
                 'name' => 'Nike Air Max',
                 'description' => 'Một trong những dòng giày nổi bật với thiết kế đệm khí Air.',
