@@ -26,7 +26,7 @@ class OrderController extends Controller
         $orders = Order::whereIn('status', [1, 2])
             ->with(['orderItems.product', 'orderItems.size', 'orderItems.color'])
             ->orderBy('order_id', 'desc')
-            ->paginate(1);
+            ->paginate(5);
         // Trả về view với danh sách đơn hàng
         return view('DoAN_nhomF.admin.ordermanager', compact('orders'));
     }
