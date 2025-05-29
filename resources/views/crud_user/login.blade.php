@@ -66,7 +66,7 @@
                         <label class="form-check-label">Remember Me</label>
                     </div>
                     <div class="mb-3 d-flex justify-content-between">
-                        <a href="#">Forgot password?</a>
+                        <a href="{{ route('forgot.form') }}">Forgot password?</a>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Login</button>
                     <div class="text-center mt-3">
