@@ -316,17 +316,16 @@
                     </div>
 
 
-                    <!-- Phần hiển thị tổng số tiền sản phẩm và giảm giá -->
+
+                    <!-- Phần hiển thị Tổng số tiền sản phẩm -->
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Tổng số tiền sản phẩm</h6>
-                            <!-- Giả sử server đã cập nhật giá trị cho tổng sản phẩm -->
-                            <h6 class="font-weight-medium" id="overallTotal">12000</h6>
+                            <h6 class="font-weight-medium" id="overallTotal">0 vnd</h6>
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">
-                                Giảm giá:
-                                <p id="voucherMessage" style="display:inline;"></p>
+                                Giảm giá: <p id="voucherMessage" style="display:inline;"></p>
                             </h6>
                         </div>
                     </div>
@@ -337,8 +336,9 @@
                     <!-- Phần nút Proceed to Checkout -->
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
-                            <h5>Tổng số tiền</h5>
+                            <h5 id="finalTotalDisplay">Tổng số tiền</h5>
                         </div>
+
                         <!-- Sử dụng nút để xử lý chuyển hướng qua JavaScript -->
                         <button id="proceedCheckout" class="btn btn-block btn-primary font-weight-bold my-3 py-3" style="color: black;">
                             Procced to Checkout
@@ -387,7 +387,7 @@
                                     {{ $item->quantity }}
                                 </td>
                                 <td class="align-middle line-total-cell">
-                                    ${{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0.00' }}
+                                    ${{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0' }}
                                 </td>
                                 <td class="align-middle">
                                     <form action="{{ route('cart.checkout.delete', $item->getKey()) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mục này không?');">
@@ -484,18 +484,19 @@
                     // Lấy tất cả các ô của cột "Total"
                     const totalCells = document.querySelectorAll('.line-total-cell');
                     totalCells.forEach(function(cell) {
-                        // Lấy nội dung của ô
+                        // Lấy nội dung của ô, ví dụ "$3.00" hoặc "$0"
                         let text = cell.textContent.trim();
-
-                        text = text.replace('vnd', '').replace(/,/g, '');
+                        // Loại bỏ các ký tự không phải số và dấu chấm, ví dụ:
+                        // "$3.00" -> "3.00", "12000 vnd" -> "12000"
+                        text = text.replace(/[^0-9.]/g, '');
                         const lineTotal = parseFloat(text) || 0;
                         overallTotal += lineTotal;
                     });
-
-                    // Cập nhật tổng chung vào phần tử có id overallTotal
+                    // Cập nhật tổng số tiền vào phần tử có id "overallTotal"
                     document.getElementById('overallTotal').textContent = overallTotal + " vnd";
                 });
             </script>
+
 
             <script>
                 function checkVoucher() {
@@ -526,9 +527,11 @@
                             // Nếu thành công, hiển thị thông báo kèm số tiền giảm
                             if (data.success) {
                                 voucherMessageEl.innerText = data.discount_amount + " VND";
+                                
                             } else {
                                 voucherMessageEl.innerText = data.error;
                             }
+                            updateFinalTotal();
                         })
                         .catch(error => console.error('Lỗi:', error));
                 }
@@ -561,6 +564,45 @@
                     window.location.href = url;
                 });
             </script>
+
+            <script>
+                // Hàm tính tổng số tiền của sản phẩm dựa vào các ô có class "line-total-cell"
+                function calculateProductTotal() {
+                    let overallTotal = 0;
+                    const totalCells = document.querySelectorAll('.line-total-cell');
+                    totalCells.forEach(function(cell) {
+                        let text = cell.textContent.trim();
+                        // Loại bỏ các ký tự không phải số và dấu chấm (vd: "$", "vnd", dấu phẩy,...)
+                        text = text.replace(/[^0-9.]/g, '');
+                        const lineTotal = parseFloat(text) || 0;
+                        overallTotal += lineTotal;
+                    });
+                    // Cập nhật hiển thị tổng tiền sản phẩm vào phần tử có id "overallTotal"
+                    document.getElementById('overallTotal').textContent = overallTotal + " vnd";
+                    return overallTotal;
+                }
+
+                // Hàm cập nhật tổng số tiền sau khi trừ giảm giá
+                function updateFinalTotal() {
+                    // Tính tổng tiền các sản phẩm
+                    const productTotal = calculateProductTotal();
+                    // Lấy giá trị giảm giá (đã được cập nhật sau khi áp dụng voucher)
+                    const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+                    // Tính tổng số tiền sau giảm giá
+                    let finalTotal = productTotal - discount;
+                    if (finalTotal < 0) finalTotal = 0;
+                    // Cập nhật vào phần tử hiển thị tổng với id "finalTotalDisplay"
+                    document.getElementById('finalTotalDisplay').textContent = "Tổng số tiền: " + finalTotal.toFixed(2) + " vnd";
+                }
+
+                // Chạy hàm khi trang được tải
+                document.addEventListener("DOMContentLoaded", function() {
+                    updateFinalTotal();
+                });
+
+               
+            </script>
+
 
 
 </body>
