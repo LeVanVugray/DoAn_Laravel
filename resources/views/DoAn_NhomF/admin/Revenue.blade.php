@@ -1,4 +1,3 @@
-{{-- resources/views/DoAn_NhomF/admin/categories.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -7,89 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-    /* Container hiển thị các thẻ theo hàng ngang */
-    .card-container {
-        display: flex;
-        flex-wrap: wrap;
-        /* Không xuống hàng */
-        overflow-x: auto;
-        /* Cuộn ngang khi tràn */
-        gap: 20px;
-        padding-bottom: 10px;
-    }
+        .card {
+            position: relative;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 100px;
+            transition: all 0.3s ease;
+        }
 
-    /* Ẩn scrollbar (nếu muốn) */
-    .card-container::-webkit-scrollbar {
-        height: 10px;
-    }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
 
-    .card-container::-webkit-scrollbar-thumb {
-        background: #555;
-        border-radius: 4px;
-    }
+        .card div:first-child {
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #4e73df;
+            margin-bottom: 10px;
+        }
 
-    .card-container::-webkit-scrollbar-track {
-        background: transparent;
-    }
+        .card div:nth-child(2) {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+        }
 
-    /* Card người dùng */
-    .card {
-        background-color: #2c2c3e;
-        color: #ffffff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-        width: 200px;
-        flex-shrink: 0;
-    }
-
-    /* Nút Sửa */
-    .btn-green {
-        background-color: transparent;
-        border: 2px solid #28a745;
-        color: #28a745;
-        padding: 6px 15px;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-    .btn-green:hover {
-        background-color: #28a745;
-        color: white;
-    }
-
-    /* Nút Xóa */
-    .btn-red {
-        background-color: transparent;
-        border: 2px solid #dc3545;
-        color: #dc3545;
-        padding: 6px 15px;
-        border-radius: 6px;
-        cursor: pointer;
-    }
-
-    .btn-red:hover {
-        background-color: #dc3545;
-        color: white;
-    }
+        .card .icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #ddd;
+        }
     </style>
-
-</head>
-
-<body>
-
-
+    {{-- resources/views/DoAn_NhomF/admin/revenue.blade.php --}}
     @include('DoAn_NhomF.admin.header')
-    <!-- start-top-search-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <div id="search">
         <form action="" method="get">
-            <input type="text" name="keyword" id="cate" placeholder="Search here..." />
+            <input type="text" name="keyword" placeholder="Search here..." />
             <button type="submit" class="tip-bottom" title="Search">
                 <i class="icon-search icon-white"></i>
             </button>
         </form>
     </div>
-    <!--close-top-search -->
+
     @include('DoAn_NhomF.admin.sidebar')
 
     <!-- BEGIN CONTENT -->
@@ -100,38 +65,46 @@
                     <i class="icon-home"></i> Home
                 </a>
             </div>
-            <h1>Manage Revenue</h1>
+            <h1>THỐNG KÊ</h1>
         </div>
-    <div class="container mt-4">
-    <h3 class="mb-4">DANH SÁCH LOẠI GIÀY</h3>
 
-    <div class="card-container">
-        @foreach($users as $user)
-            <div class="card">
-                <h5 class="card-title font-weight-bold">{{$user->name}}</h5>
-                <p class="card-text text-muted">{{$user->email}}</p>
-                <small class="text-secondary">Tạo lúc: {{$user->created_at}}</small>
-                <div class="mt-3 d-flex justify-content-between">
-                    <a href="" class="btn btn-green">Sửa</a>
-                    <form action="" method="POST" onsubmit="return confirm('Bạn có chắc muốn xóa?')">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-red" type="submit">Xóa</button>
-                    </form>
+        <div class="container-fluid">
+            <hr>
+            <div class="row-fluid">
+                <div class="span12">
+                    <div class="row-fluid">
+                        {{-- Card Start --}}
+                        @php
+                        
+                        @endphp
+
+                        @foreach ($cards as $card)
+                        <div class="span3">
+                            <div class="card" style="border-left: 5px solid #1cc88a;">
+                                <div class="card-title" style="font-size: 13px; font-weight: bold; text-transform: uppercase; color: #1cc88a; margin-bottom: 8px;">
+                                    {{ $card['label'] }}
+                                </div>
+                                <div class="card-value" style="font-size: 22px; font-weight: bold; color: #333;">
+                                    {{ $card['value'] }}
+                                </div>
+                                <div class="icon">
+                                    <i class="fas {{ $card['icon'] }} fa-2x"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        @endforeach
+                        {{-- Card End --}}
+                    </div>
                 </div>
             </div>
-        @endforeach
-        {{-- Pagination --}}
-            <div class="d-flex justify-content-center mt-4">
+        </div>
+
     </div>
-</div>
+    <!-- END CONTENT -->
 
+    <div class="row-fluid">
+        <div id="footer" class="span12">2025 &copy; TDC - Lập trình web 1</div>
+    </div>
 
-
-       
-
-        @include('DoAn_NhomF.admin.footer')
-
-</body>
-
-</html>
+    @include('DoAn_NhomF.admin.footer')

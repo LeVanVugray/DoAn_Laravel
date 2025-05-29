@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             ShoppingCart_DoAnNhomF::class,
             CartItems_DoAnNhomF::class,
             Payment_DoAnNhomF::class,
+            VoucherSeeder::class,
 
 
             // User Của Thầy
