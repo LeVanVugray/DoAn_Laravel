@@ -37,18 +37,32 @@ class CrudUserController extends Controller
     public function authUser(Request $request)
     {
         $request->validate([
-            'email' => 'required',
-            'password' => 'required',
+            'email' => 'required|email',
+            'password' => [
+                'required',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+        ], [
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'password.required' => 'Password is required.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
         ]);
 
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('list')
-                ->withSuccess('Signed in');
+        if (!User::where('email', $request->email)->exists()) {
+            return redirect("login")->withErrors(['email' => 'Email not found.'])->withInput();
         }
 
-        return redirect("login")->withSuccess('Login details are not valid');
+        $remember = $request->has('remember');
+        if (!Auth::attempt($request->only('email', 'password'), $remember)) {
+            return redirect("login")->withErrors(['password' => 'Incorrect password.'])->withInput();
+        }
+
+        if (Auth::user()->role === 0) {
+            return redirect()->to('/admin/indexadmin');
+        }
+
+        return redirect()->route('index')->withSuccess('Signed in');
     }
 
     /**
@@ -65,22 +79,38 @@ class CrudUserController extends Controller
     public function postUser(Request $request)
     {
         $request->validate([
-            'name' => 'required',
-           
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'password' => [
+                'required',
+                'confirmed',
+                'regex:/^(?=.*[A-Z])(?=.*[\W\d]).+$/'
+            ],
+            'phone' => 'required|numeric|digits_between:10,11',
+            'address' => 'required|string|max:255',
+        ], [
+            'name.required' => 'Name is required.',
+            'email.required' => 'Email is required.',
+            'email.email' => 'Invalid email format.',
+            'email.unique' => 'Email already exists.',
+            'password.required' => 'Password is required.',
+            'password.confirmed' => 'Passwords do not match.',
+            'password.regex' => 'Password must contain at least one uppercase letter and one number or special character.',
+            'phone.required' => 'Phone number is required.',
+            'phone.numeric' => 'Phone must be a number.',
+            'phone.digits_between' => 'Phone must be between 10 and 11 digits.',
+            'address.required' => 'Address is required.',
         ]);
-
-        $data = $request->all();
-        
     
-        $check = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password'])
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'phone' => $request->phone,
+            'address' => $request->address,
         ]);
-
-        return redirect("login");
+    
+        return redirect()->route('login')->withSuccess('You can now login');
     }
 
     /**
@@ -122,21 +152,20 @@ class CrudUserController extends Controller
         $input = $request->all();
 
         $request->validate([
-            'name' => 'required',
-            
-            'email' => 'required|email|unique:users,id,'.$input['id'],
-            'password' => 'required|min:6',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:6|confirmed',
+            'phone' => 'required|string|max:15',
+            'address' => 'required|string|max:255',
 
         ]);
 
-       $user = User::find($input['id']);
-       $user->name = $input['name'];
-      
-       $user->email = $input['email'];
-       $user->password = $input['password'];
-
-    
-       $user->save();
+        $user->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'address' => $request->address,
+        ]);
 
         return redirect("list")->withSuccess('You have signed-in');
     }
@@ -149,7 +178,6 @@ class CrudUserController extends Controller
         if(Auth::check()){
             $users = User::all();
             $products = Product::all();
-            $users = User::paginate(self::MAX_RECORDS);
             return view('crud_user.list', ['users' => $users],['products' => $products]);
         }
 

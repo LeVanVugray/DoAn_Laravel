@@ -7,11 +7,10 @@ use Hash;
 use Session;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-
+use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 class AdminController extends Controller
 {
-    
-
     public function indexadmin(){
         return view('DoAN_nhomF.admin.index');
     }
@@ -257,6 +256,136 @@ class AdminController extends Controller
         }
 
     
+    }  
+
+    public function productsadmin(Request $request) {
+        $keyword = $request->input('keyword');
+        $sort = $request->input('sort');
+    
+        $query = Product::query();
+    
+        if ($keyword) {
+            $query->where(function($q) use ($keyword) {
+                $q->where('name', 'LIKE', "%$keyword%")
+                  ->orWhere('description', 'LIKE', "%$keyword%");
+            });
+        }
+    
+        // Sorting logic
+        if ($sort === 'price') {
+            $query->orderBy('price', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+    
+        $products = $query->paginate(16)->appends([
+            'keyword' => $keyword,
+            'sort' => $sort
+        ]);
+    
+        return view('DoAN_nhomF.admin.products', compact('products', 'keyword', 'sort'));
+    }
+    
+
+    public function products(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $products = Product::when($keyword, function ($query, $keyword) {
+            return $query->where('name', 'like', '%' . $keyword . '%');
+        })->get();
+
+        return view('DoAN_nhomF.admin.products', compact('products', 'keyword'));
     }
 
-}   
+    public function form_add_product() {
+        $categories = Category::all();
+        return view('DoAn_NhomF.admin.form_add_product', compact('categories'));
+    }
+
+    public function post_form_add_product(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,category_id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ], [
+            'category_id.exists' => 'The selected category no longer exists.',
+            'image.max' => 'Image size must not exceed 2MB.',
+        ]);
+
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('AnhDoAn'), $imageName); // Lưu vào thư mục public/AnhDoAn
+            $imagePath = $imageName; // Đường dẫn để lưu vào DB
+        }
+
+        Product::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'price' => $request->price,
+            'category_id' => $request->category_id,
+            'image' => $imagePath,
+        ]);
+
+        return redirect()->route('admin.productadmin')->with('success', 'Product added successfully!');
+    }
+
+    public function form_edit_product(Request $request)
+    {
+        $product_id = $request->get('product_id');
+        $product = Product::find($product_id);
+        $categories = Category::all();
+
+        return view('DoAn_NhomF.admin.form_edit_product', compact('product', 'categories'));
+    }
+
+    public function post_edit_product(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,product_id',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric',
+            'category_id' => 'required|exists:categories,category_id',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ], [
+            'category_id.exists' => 'The selected category no longer exists.',
+            'image.max' => 'Image size must not exceed 2MB.',
+        ]);
+
+        $product = Product::find($request->product_id);
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+        $product->category_id = $request->category_id;
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('AnhDoAn'), $imageName);
+
+            $product->image = $imageName;
+        }
+
+        $product->save();
+
+        return redirect()->route('admin.productadmin')->withSuccess('Product updated successfully!');
+    }
+
+    public function deleteProduct(Request $request) {
+        $product_id = $request->get('product_id');
+        $product = Product::find($product_id);
+
+        if ($product && $product->image) {
+            Storage::disk('public')->delete($product->image);
+        }
+
+        Product::destroy($product_id);
+
+        return redirect()->route('admin.productadmin')->withSuccess('Product deleted successfully!');
+    }
+}  

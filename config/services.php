@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'google' => [
+        'client_id' => env('1094008827097-bl0nrh9vpd51vkusv5cabohe9q28ohui.apps.googleusercontent.com'),
+        'client_secret' => env('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'),
+        'redirect' => env('http://127.0.0.1:8000/auth/google/callback'),
+    ],
 ];

@@ -7,6 +7,9 @@ use App\Http\Controllers\ExeController;
 use App\Http\Controllers\DoAnNhomController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleControllers;
+use App\Http\Controllers\SocialAuthController;
+use App\Http\Controllers\ForgotPasswordController;
+
 
 
 /*
@@ -19,9 +22,9 @@ use App\Http\Controllers\RoleControllers;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
 // Admin
 Route::prefix('admin')->name('admin.')->group(function () {
-
     Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
 
     Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
@@ -90,6 +93,18 @@ Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('d
 
 
 // crud_User
+
+Route::get('productadmin', [AdminController::class, 'productsadmin'])->name('admin.productadmin');
+
+Route::get('addproduct', [AdminController::class, 'form_add_product'])->name('form_add_product');
+Route::post('addproduct', [AdminController::class, 'post_form_add_product'])->name('post_form_add_product');
+
+Route::get('editproduct', [AdminController::class, 'form_edit_product'])->name('form_edit_product');
+Route::post('editproduct', [AdminController::class, 'post_edit_product'])->name('post_edit_product');
+
+Route::get('deleteProduct', [AdminController::class, 'deleteProduct'])->name('deleteProduct');
+
+//Login & Register
 Route::get('dashboard', [CrudUserController::class, 'dashboard']);
 
 Route::get('login', [CrudUserController::class, 'login'])->name('login');
@@ -110,6 +125,33 @@ Route::get('list', [CrudUserController::class, 'listUser'])->name('user.list');
 Route::get('signout', [CrudUserController::class, 'signOut'])->name('signout');
 
 Route::get('role', [RoleControllers::class, 'role'])->name('user.role');
+
+Route::get('auth/google/', [SocialAuthController::class, 'redirectToGoogle']);
+Route::get('auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
+
+Route::post('/logout', [CrudUserController::class, 'signOut'])->name('logout');
+
+//Forgot Password
+Route::get('forgot-password', [ForgotPasswordController::class, 'showForgotForm'])->name('forgot.form');
+Route::post('forgot-password/send-code', [ForgotPasswordController::class, 'sendCode'])->name('forgot.sendCode');
+
+Route::get('verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->name('forgot.verifyCode');
+Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.resetPassword');
+
+
+// EXE1
+Route::get('indexexe', [ExeController::class, 'indexexe'])->name('indexexe');
+
+Route::get('loginexe', [ExeController::class, 'loginexe'])->name('loginexe');
+
+Route::get('listexe', [ExeController::class, 'listexe'])->name('listexe');
+
+Route::get('registerexe', [ExeController::class, 'registerexe'])->name('registerexe');
+
+Route::get('updateexe', [ExeController::class, 'updateexe'])->name('updateexe');
+
+Route::get('viewexe', [ExeController::class, 'viewexe'])->name('viewexe');
+
 
 Route::get('/', function () {
     return view('welcome');
