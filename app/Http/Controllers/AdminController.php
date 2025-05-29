@@ -31,15 +31,21 @@ class AdminController extends Controller
     public function sidebaradmin(){
         return view('DoAN_nhomF.admin.sidebar');
     }
-    public function usersadmin(Request $request){
+    public function usersadmin(Request $request)
+    {
         $keyword = $request->input('keyword');
-        // Nếu không có query, cho danh sách rỗng
+        $perPage = 5;
+    
+        // Kiểm tra tham số 'page' có hợp lệ không (phải là số nguyên dương)
+        if ($request->has('page') && (!ctype_digit($request->page) || (int)$request->page < 1)) {
+            return redirect()->route('usersadmin', ['page' => 1])
+                             ->with('error', 'Trang không hợp lệ, đã chuyển về trang đầu.');
+        }
+    
         if ($keyword) {
             $users = Users::where(function ($query) use ($keyword) {
-                // Tìm theo tên
                 $query->where('name', 'LIKE', "%$keyword%");
     
-                // Tìm theo role
                 if (strtolower($keyword) === "admin") {
                     $query->orWhere('role', 0);
                 } elseif (strtolower($keyword) === 'customer') {
@@ -47,14 +53,22 @@ class AdminController extends Controller
                 }
             })
             ->orderBy('user_id', 'desc')
-            ->paginate(3)
+            ->paginate($perPage)
             ->appends(['keyword' => $keyword]);
         } else {
-            $users = Users::orderBy('user_id', 'desc') 
-            ->paginate(5);
+            $users = Users::orderBy('user_id', 'desc')
+                ->paginate($perPage);
         }
-        return view('DoAN_nhomF.admin.users',compact('users','keyword'));
+    
+        // Nếu không có dữ liệu trên trang yêu cầu → chuyển về trang 1
+        if ($users->isEmpty() && $request->has('page') && $request->page > 1) {
+            return redirect()->route('usersadmin', ['page' => 1])
+                             ->withErrors(['error' => 'Trang không tồn tại, đã chuyển về trang đầu.']);
+        }
+    
+        return view('DoAN_nhomF.admin.users', compact('users', 'keyword'));
     }
+    
 
     public function footeradmin(){
         return view('DoAN_nhomF.admin.footer');
@@ -111,7 +125,13 @@ class AdminController extends Controller
         ],
         'phone' => ['required', 'digits:11'],
         'address' => ['required', 'string', 'max:255'],
-        'password' => ['nullable', 'string', 'min:6', 'max:100'],
+        'password' => [
+            'required',
+            'string',
+            'min:6',
+            'max:100',
+            'regex:/^\S{6,50}$/'
+        ],
         'role' => ['required', 'in:0,1'],
     ], [
         'name.required' => 'Tên người dùng là bắt buộc.',
@@ -132,6 +152,7 @@ class AdminController extends Controller
 
         'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
         'password.max' => 'Mật khẩu không được vượt quá 100 ký tự.',
+        'password.regex' => 'Mật khẩu không được chứa khoảng trắng.',
 
         'role.required' => 'Vui lòng chọn quyền.',
         'role.in' => 'Giá trị quyền không hợp lệ.',
@@ -164,7 +185,13 @@ class AdminController extends Controller
             ],
             'phone' => 'required|digits:11',
             'address' => 'required|string|max:255',
-            'password' => 'required|string|min:6|max:50',
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+                'max:50',
+                'regex:/^\S{6,50}$/'
+            ],
             'role' => 'required|in:0,1',
         ], [
             'name.required' => 'Tên người dùng là bắt buộc.',
@@ -186,6 +213,7 @@ class AdminController extends Controller
             'password.required' => 'Mật khẩu là bắt buộc.',
             'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
             'password.max' => 'Mật khẩu không được vượt quá 50 ký tự.',
+            'password.regex' => 'Mật khẩu không được chứa khoảng trắng.',
         
             'role.required' => 'Vui lòng chọn quyền.',
             'role.in' => 'Giá trị quyền không hợp lệ.', 
