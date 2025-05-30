@@ -40,7 +40,6 @@ class AdminController extends Controller
                         ['label' => 'LOẠI GIÀY', 'value' => $Catecount, 'color' => '#4e73df', 'icon' => 'fa-th-list'],
                         ['label' => 'GIÀY', 'value' => $Productcount, 'color' => '#4e73df', 'icon' => 'fa-shoe-prints'],
                         ['label' => 'KHUYẾN MÃI', 'value' => $Vouchercount, 'color' => '#f6c23e', 'icon' => 'fa-percent'],
-                        ['label' => 'HÓA ĐƠN', 'value' => '2', 'color' => '#e74a3b', 'icon' => 'fa-receipt'],
                         ];
 
         return view('DoAN_nhomF.admin.revenue',compact('users','usercount','cards'));
@@ -405,7 +404,6 @@ class AdminController extends Controller
             'string',
             'min:6',
             'max:100',
-            'regex:/^\S{6,50}$/'
         ],
         'role' => ['required', 'in:0,1'],
     ], [
@@ -427,7 +425,6 @@ class AdminController extends Controller
 
         'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
         'password.max' => 'Mật khẩu không được vượt quá 100 ký tự.',
-        'password.regex' => 'Mật khẩu không được chứa khoảng trắng.',
 
         'role.required' => 'Vui lòng chọn quyền.',
         'role.in' => 'Giá trị quyền không hợp lệ.',

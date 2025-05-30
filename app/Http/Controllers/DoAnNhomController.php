@@ -20,8 +20,19 @@ class DoAnNhomController extends Controller
         $productss = Product::where('product_id', '>', 3)->take(2)->get();
         return view('DoAN_nhomF.index', compact('carouselImages','products','productcate','productfeture','productss'));
     }
-    public function shop(){
-        return view('DoAN_nhomF.shop');
+    public function shop(Request $request){ 
+        $productshop = Product::paginate(4);
+        if ($request->has('page') && (!ctype_digit($request->page) || (int)$request->page < 1)) {
+            return redirect()->route('shop', ['page' => 1])
+                             ->with('error', 'Trang không hợp lệ, đã chuyển về trang đầu.');
+        }
+        // Nếu không có dữ liệu trên trang yêu cầu → chuyển về trang 1
+        if ($productshop->isEmpty() && $request->has('page') && $request->page > 1) {
+            return redirect()->route('shop', ['page' => 1])
+                             ->withErrors(['error' => 'Trang không tồn tại, đã chuyển về trang đầu.']);
+        }
+       
+        return view('DoAN_nhomF.shop',compact('productshop'));
     }
     public function detail(){
         return view('DoAN_nhomF.detail');

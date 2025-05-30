@@ -2,18 +2,7 @@
 <div id="sidebar">
     <a href="#" class="visible-phone"><i class="icon icon-th"></i> Tables</a>
     <ul>
-        <li>
-            <a href="{{ route('admin.indexadmin') }}">
-                <i class="icon icon-home"></i>
-                <span>Dashboard</span>
-            </a>
-        </li>
-        <li>
-            <a href="{{ route('admin.itemadmin') }}">
-                <i class="icon icon-th-list"></i>
-                <span>Items</span>
-            </a>
-        </li>
+        
         <li>
             <a href="{{ route('admin.categoriesadmin') }}">
                 <i class="icon icon-th-list"></i>
