@@ -55,7 +55,8 @@ class DoAnNhomController extends Controller
         
         $product = Product::find($product_id);
         if (!$product) {
-            $product = Product::find(1);
+            return redirect()->route('detailsearch', ['product_id' => 1])
+                 ->with('error', 'Id Không Hợp Lệ Vui Lòng Thử Lại');
         }
         $products = Product::take(4)->get();
         return view('DoAN_nhomF.detailsearch', compact('products','product'));  

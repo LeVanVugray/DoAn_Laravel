@@ -34,12 +34,12 @@
                         <form action="{{route('post_from_update_user')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
                          
                             @csrf
-                            <input type="hidden" name="updated_at" value="{{ $user->updated_at }}">
-                            <input type="hidden" name="user_id" value="{{ $user->user_id }}">
+                            <input type="hidden" name="updated_at" value="{{ $user->updated_at ??  '' }}">
+                            <input type="hidden" name="last_valid_user_id" value="{{ $user->user_id ??  ''}}">
                             <div class="control-group">
                                 <label class="control-label">Username </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="name"  value="{{ $user->name }}" required autofocus/> *
+                                    <input type="text" class="span11" name="name"  value="{{ $user->name ??  '' }}" required autofocus/> *
                                     @if ($errors->has('name'))
                                 <span class="text-danger">{{ $errors->first('name') }}</span>
                                 @endif
@@ -49,7 +49,7 @@
                                 <label class="control-label">Email
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="email" value="{{ $user->email }}" required autofocus/> *
+                                    <input type="text" class="span11" name="email" value="{{ $user->email ??  '' }}" required autofocus/> *
                                     @if ($errors->has('email'))
                                 <span class="text-danger">{{ $errors->first('email') }}</span>
                                 @endif
@@ -59,7 +59,7 @@
                                 <label class="control-label">Password
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="password"  value="{{ $user->password }}" required autofocus/> *
+                                    <input type="text" class="span11" name="password"  value="{{ $user->password ??  '' }}" required autofocus/> *
                                     @if ($errors->has('password'))
                                 <span class="text-danger">{{ $errors->first('password') }}</span>
                                 @endif
@@ -69,7 +69,7 @@
                                 <label class="control-label">Phone
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" value="{{ $user->phone }}" name="phone" required autofocus/> *
+                                    <input type="text" class="span11" value="{{ $user->phone ??  '' }}" name="phone" required autofocus/> *
                                     @if ($errors->has('phone'))
                                 <span class="text-danger">{{ $errors->first('phone') }}</span>
                                 @endif
@@ -79,7 +79,7 @@
                                 <label class="control-label">Address
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="address" value="{{ $user->address }}" required autofocus/> *
+                                    <input type="text" class="span11" name="address" value="{{ $user->address ??  '' }}" required autofocus/> *
                                     @if ($errors->has('address'))
                                 <span class="text-danger">{{ $errors->first('address') }}</span>
                                 @endif
@@ -90,8 +90,8 @@
                                 <div class="controls">
                                     <select class="span11" name="role" required autofocus>
                                         <option value="">-- Chọn quyền --</option>
-                                        <option value="0" {{ $user->role == 0 ? 'selected' : '' }}>Admin</option>
-                                        <option value="1" {{ $user->role == 1 ? 'selected' : '' }}>Customer</option>
+                                        <option value="0" {{ old('role', $user->role ?? '') == 0 ? 'selected' : '' }}>Admin</option>
+                                        <option value="1" {{ old('role', $user->role ?? '') == 1 ? 'selected' : '' }}>Customer</option>
                                     </select> *<br>
                                     @if ($errors->has('role'))
                                     <span class="text-danger">{{ $errors->first('role') }}</span>

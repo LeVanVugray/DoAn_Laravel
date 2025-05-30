@@ -34,11 +34,12 @@
                         <form action="{{route('admin.post_from_update_category')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
 
                             @csrf
-                            <input type="hidden" name="category_id" value="{{ $cate->category_id }}">
+                            <input type="hidden" name="updated_at" value="{{ $cate->updated_at ??  '' }}">
+                            <input type="hidden" name="category_id" value="{{ $cate->category_id ??  '' }}">
                             <div class="control-group">
                                 <label class="control-label">category_name </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="category_name" id="category_name" value="{{ $cate->category_name }}" required autofocus /> *
+                                    <input type="text" class="span11" name="category_name" id="category_name" value="{{ $cate->category_name ??  '' }}" required autofocus /> *
                                     @if ($errors->has('category_name'))
                                     <span class="text-danger">{{ $errors->first('category_name') }}</span>
                                     @endif
@@ -48,13 +49,12 @@
                                 <label class="control-label">description
                                 </label>
                                 <div class="controls">
-                                    <input type="text" class="span11" name="description" id="description" value="{{ $cate->description }}" required autofocus /> *
+                                    <input type="text" class="span11" name="description" id="description" value="{{ $cate->description ??  '' }}" required autofocus /> *
                                     @if ($errors->has('description'))
                                     <span class="text-danger">{{ $errors->first('description') }}</span>
                                     @endif
                                 </div>
                             </div>
-                        </form>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn btn-success">Update</button>
