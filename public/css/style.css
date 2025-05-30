@@ -9710,3 +9710,17 @@ a.text-dark:hover, a.text-dark:focus {
     transform: translateY(-15px);
   }
 }
+.auto-dismiss {
+  position: relative;
+  animation: fadeOut 0.5s ease-in-out 3s forwards; /* sau 3s sẽ biến mất trong 0.5s */
+}
+
+@keyframes fadeOut {
+  to {
+      opacity: 0;
+      visibility: hidden;
+      height: 0;
+      margin: 0;
+      padding: 0;
+  }
+}
