@@ -28,6 +28,7 @@
                 
                 <select name="sort" class="form-control" onchange="this.form.submit()">
                     <option value="">Sort by</option>
+                    <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Name: A-Z</option>
                     <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price" {{ request('sort') == 'price' ? 'selected' : '' }}>Price: Low to High</option>
                 </select>

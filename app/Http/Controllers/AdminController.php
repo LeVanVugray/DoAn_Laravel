@@ -274,6 +274,8 @@ class AdminController extends Controller
         // Sorting logic
         if ($sort === 'price') {
             $query->orderBy('price', 'asc');
+        } elseif ($sort == 'name') {
+            $query->orderBy('name', 'asc');
         } else {
             $query->orderBy('created_at', 'desc');
         }
