@@ -1,6 +1,5 @@
 {{-- resources/views/DoAn_NhomF/admin/products.blade.php --}}
 @include('DoAn_NhomF.admin.header')
-
 @include('DoAn_NhomF.admin.sidebar')
 
 <!-- BEGIN CONTENT -->

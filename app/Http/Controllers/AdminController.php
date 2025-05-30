@@ -536,6 +536,7 @@ class AdminController extends Controller
 
     public function productsadmin(Request $request) {
         $keyword = $request->input('keyword');
+        
         $sort = $request->input('sort');
     
         $query = Product::query();
