@@ -13,7 +13,12 @@ use Illuminate\Support\Facades\Auth;
 class DoAnNhomController extends Controller
 {
     public function index(){
-        return view('DoAN_nhomF.index');
+        $carouselImages = Product::take(3)->get();
+        $products = Product::where('product_id', '>', 3)->take(2)->get();
+        $productcate = Product::where('product_id', '>', 5)->take(8)->get();
+        $productfeture = Product::where('product_id', '>', 13)->take(4)->get();
+        $productss = Product::where('product_id', '>', 3)->take(2)->get();
+        return view('DoAN_nhomF.index', compact('carouselImages','products','productcate','productfeture','productss'));
     }
     public function shop(){
         return view('DoAN_nhomF.shop');
@@ -34,9 +39,14 @@ class DoAnNhomController extends Controller
     }
     public function detailsearch(Request $request){
         // Lấy product_id từ query string
-        $products = Product::take(4)->get();
+        
         $product_id = $request->input('product_id');
+        
         $product = Product::find($product_id);
+        if (!$product) {
+            $product = Product::find(1);
+        }
+        $products = Product::take(4)->get();
         return view('DoAN_nhomF.detailsearch', compact('products','product'));  
     }
     public function search(Request $request)
@@ -47,10 +57,10 @@ class DoAnNhomController extends Controller
         if ($query) {
             $products = Product::where('name', 'LIKE', "%$query%")
                                ->orWhere('description', 'LIKE', "%$query%")
-                             ->paginate(3)
+                             ->paginate(4)
                              ->appends(['query' => $query]);
         } else {
-            $products = Product::paginate(3);
+            $products = Product::paginate(4);
         }
 
         return view('DoAN_nhomF.search', [

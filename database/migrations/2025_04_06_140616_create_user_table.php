@@ -18,11 +18,8 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone', 15)->nullable();
             $table->string('address', 255)->nullable();
-            $table->tinyInteger('role')->default(1); // 1 = customer
-<<<<<<< HEAD
-=======
+            $table->tinyInteger('role')->default(1); // 1 = customer;
             $table->rememberToken();
->>>>>>> ngoc
             $table->timestamps();
 });
 

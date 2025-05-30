@@ -46,6 +46,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     Route::get('resultadmin', [AdminController::class, 'resultadmin'])->name('resultadmin');
 
+    Route::get('voucheradmin', [AdminController::class, 'voucheradmin'])->name('voucheradmin');
+
+    Route::get('from_add_voucher', [AdminController::class, 'from_add_voucher'])->name('from_add_voucher');
+    Route::post('from_add_voucher', [AdminController::class, 'post_from_add_voucher'])->name('post_from_add_voucher');
+
+    Route::get('from_update_voucher', [AdminController::class, 'from_update_voucher'])->name('from_update_voucher');
+    Route::post('from_update_voucher', [AdminController::class, 'post_from_update_voucher'])->name('post_from_update_voucher');
+
+    Route::get('deleteVoucher', [AdminController::class, 'deleteVoucher'])->name('deleteVoucher');
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -73,6 +82,16 @@ Route::post('from_update_user', [AdminController::class, 'post_from_update_user'
 Route::get('deleteUser', [AdminController::class, 'deleteUser'])->name('deleteUser');
 
 Route::get('revenuetadmin', [AdminController::class, 'revenuetadmin'])->name('revenuetadmin');
+
+// voucheradmin
+Route::get('voucheradmin', [AdminController::class, 'voucheradmin'])->name('voucheradmin');
+Route::get('from_add_voucher', [AdminController::class, 'from_add_voucher'])->name('from_add_voucher');
+Route::post('from_add_voucher', [AdminController::class, 'post_from_add_voucher'])->name('post_from_add_voucher');
+
+Route::get('from_update_voucher', [AdminController::class, 'from_update_voucher'])->name('from_update_voucher');
+Route::post('from_update_voucher', [AdminController::class, 'post_from_update_voucher'])->name('post_from_update_voucher');
+
+Route::get('deleteVoucher', [AdminController::class, 'deleteVoucher'])->name('deleteVoucher');
 
 // Đồ Án Nhóm F
 Route::get('index', [DoAnNhomController::class, 'index'])->name('index');
@@ -139,18 +158,6 @@ Route::get('verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->
 Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.resetPassword');
 
 
-// EXE1
-Route::get('indexexe', [ExeController::class, 'indexexe'])->name('indexexe');
-
-Route::get('loginexe', [ExeController::class, 'loginexe'])->name('loginexe');
-
-Route::get('listexe', [ExeController::class, 'listexe'])->name('listexe');
-
-Route::get('registerexe', [ExeController::class, 'registerexe'])->name('registerexe');
-
-Route::get('updateexe', [ExeController::class, 'updateexe'])->name('updateexe');
-
-Route::get('viewexe', [ExeController::class, 'viewexe'])->name('viewexe');
 
 
 Route::get('/', function () {
