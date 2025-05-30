@@ -26,8 +26,14 @@ use App\Http\Controllers\ForgotPasswordController;
 // Admin
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
-
+//category
     Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
+
+    Route::get('from_add_category', [AdminController::class, 'from_add_category'])->name('from_add_category');
+    Route::post('from_add_category', [AdminController::class, 'post_from_add_category'])->name('post_from_add_category');
+
+     Route::get('from_update_category', [AdminController::class, 'from_update_category'])->name('from_update_category');
+    Route::post('from_update_category', [AdminController::class, 'post_from_update_category'])->name('post_from_update_category');
 
     Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
 
