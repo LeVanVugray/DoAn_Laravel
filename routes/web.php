@@ -111,8 +111,7 @@ Route::get('search', [DoAnNhomController::class, 'search'])->name('search');
 Route::get('detailsearch', [DoAnNhomController::class, 'detailsearch'])->name('detailsearch');
 
 
-// crud_User
-
+//Product Management
 Route::get('productadmin', [AdminController::class, 'productsadmin'])->name('admin.productadmin');
 
 Route::get('addproduct', [AdminController::class, 'form_add_product'])->name('form_add_product');

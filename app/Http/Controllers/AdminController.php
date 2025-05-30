@@ -617,10 +617,16 @@ class AdminController extends Controller
     {
         $product_id = $request->get('product_id');
         $product = Product::find($product_id);
-        $categories = Category::all();
 
+        if (!$product) {
+            return redirect()->route('admin.productadmin')
+                ->withErrors(['edit_error' => 'The product no longer exists.']);
+        }
+
+        $categories = Category::all();
         return view('DoAn_NhomF.admin.form_edit_product', compact('product', 'categories'));
     }
+
 
     public function post_edit_product(Request $request)
     {
@@ -637,17 +643,25 @@ class AdminController extends Controller
         ]);
 
         $product = Product::find($request->product_id);
+
+        if (!$product) {
+            return redirect()->route('admin.productadmin')
+                ->withErrors(['edit_error' => 'The product no longer exists.']);
+        }
+
+        if ($request->has('original_updated_at') && $product->updated_at != $request->input('original_updated_at')) {
+            return redirect()->back()
+                ->withErrors(['edit_error' => 'This product was already updated. Please refresh the page.']);
+        }
+
         $product->name = $request->name;
         $product->description = $request->description;
         $product->price = $request->price;
         $product->category_id = $request->category_id;
 
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $image->move(public_path('AnhDoAn'), $imageName);
-
-            $product->image = $imageName;
+            $imagePath = $request->file('image')->store('products', 'public');
+            $product->image = $imagePath;
         }
 
         $product->save();
@@ -655,16 +669,18 @@ class AdminController extends Controller
         return redirect()->route('admin.productadmin')->withSuccess('Product updated successfully!');
     }
 
-    public function deleteProduct(Request $request) {
+    public function deleteProduct(Request $request)
+    {
         $product_id = $request->get('product_id');
         $product = Product::find($product_id);
 
-        if ($product && $product->image) {
-            Storage::disk('public')->delete($product->image);
+        if (!$product) {
+            return redirect()->route('admin.productadmin')
+                            ->withErrors(['delete_error' => 'The product you selected has already been deleted.']);
         }
 
-        Product::destroy($product_id);
+        $product->delete();
 
-        return redirect()->route('admin.productadmin')->withSuccess('Product deleted successfully!');
+        return redirect()->route('admin.productadmin')->with('success', 'Product deleted successfully!');
     }
 }  

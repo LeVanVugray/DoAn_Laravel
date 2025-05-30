@@ -11,6 +11,12 @@
             </a>
         </div>
         <h1>Manage Products</h1>
+
+        @if ($errors->has('delete_error'))
+            <div class="alert alert-danger" style="margin-top: 15px;">
+                {{ $errors->first('delete_error') }}
+            </div>
+        @endif
     </div>
 
     <div class="widget-content" style="padding: 20px;">

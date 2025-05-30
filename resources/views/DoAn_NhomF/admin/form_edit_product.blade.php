@@ -4,11 +4,18 @@
 <div id="content">
     <div id="content-header">
         <h1>Edit Product</h1>
+
+        @if ($errors->has('edit_error'))
+            <div class="alert alert-danger" style="margin-top: 10px;">
+                {{ $errors->first('edit_error') }}
+            </div>
+        @endif
     </div>
     <div class="container-fluid">
         <form action="{{ route('post_edit_product') }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->product_id }}">
+            <input type="hidden" name="original_updated_at" value="{{ $product->updated_at }}">
             
             <div class="control-group">
                 <label class="control-label">Name</label>
