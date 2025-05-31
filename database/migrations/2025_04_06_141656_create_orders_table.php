@@ -18,7 +18,7 @@ return new class extends Migration
             $table->tinyInteger('status')->default(1); // 1 = pending
             $table->timestamp('shipped_at')->nullable();
             $table->timestamps();
-            $table->string("payment");
+            $table->string("payment")->nullable();
 
             // Khóa ngoại
             $table->foreign('user_id')
