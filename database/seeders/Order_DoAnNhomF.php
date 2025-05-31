@@ -28,6 +28,7 @@ class Order_DoAnNhomF extends Seeder
                 'shipped_at'   => null,       
                 'created_at'   => now(),
                 'updated_at'   => now(),
+                
             ],
             [
                 'user_id'      => 2,          

@@ -15,17 +15,14 @@ return new class extends Migration
             $table->id('order_item_id');
             $table->unsignedBigInteger('order_id')->nullable();
             $table->unsignedBigInteger('product_id')->nullable();
-            $table->unsignedBigInteger('size_id')->nullable();
-            $table->unsignedBigInteger('color_id')->nullable();
+
             $table->integer('quantity');
             $table->decimal('unit_price', 10, 2);
-        
-        // Khóa ngoại
-        $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('set null');
-        $table->foreign('product_id')->references('product_id')->on('products')->onDelete('set null');
-        $table->foreign('size_id')->references('size_id')->on('sizes')->onDelete('set null');
-        $table->foreign('color_id')->references('color_id')->on('colors')->onDelete('set null');
-    });
+            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade');
+            $table->foreign('product_id')->references('product_id')->on('products')->onDelete('cascade');
+          
+        });
+
     }
 
     /**

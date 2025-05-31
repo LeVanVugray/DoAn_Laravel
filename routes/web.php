@@ -9,6 +9,10 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleControllers;
 use App\Http\Controllers\SocialAuthController;
 use App\Http\Controllers\ForgotPasswordController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartCheckoutController;
+use App\Http\Controllers\CheckOutController;
+use App\Http\Controllers\VoucherController;
 
 
 
@@ -26,13 +30,13 @@ use App\Http\Controllers\ForgotPasswordController;
 // Admin
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
-//category
+    //category
     Route::get('categoriesadmin', [AdminController::class, 'categoriesadmin'])->name('categoriesadmin');
 
     Route::get('from_add_category', [AdminController::class, 'from_add_category'])->name('from_add_category');
     Route::post('from_add_category', [AdminController::class, 'post_from_add_category'])->name('post_from_add_category');
 
-     Route::get('from_update_category', [AdminController::class, 'from_update_category'])->name('from_update_category');
+    Route::get('from_update_category', [AdminController::class, 'from_update_category'])->name('from_update_category');
     Route::post('from_update_category', [AdminController::class, 'post_from_update_category'])->name('post_from_update_category');
 
     Route::get('usersadmin', [AdminController::class, 'usersadmin'])->name('usersadmin');
@@ -106,8 +110,6 @@ Route::get('shop', [DoAnNhomController::class, 'shop'])->name('shop');
 
 Route::get('detail', [DoAnNhomController::class, 'detail'])->name('detail');
 
-Route::get('cart', [DoAnNhomController::class, 'cart'])->name('cart');
-
 Route::get('checkout', [DoAnNhomController::class, 'checkout'])->name('checkout');
 
 Route::get('contact', [DoAnNhomController::class, 'contact'])->name('contact');
@@ -162,6 +164,24 @@ Route::post('forgot-password/send-code', [ForgotPasswordController::class, 'send
 
 Route::get('verify-code', [ForgotPasswordController::class, 'showVerifyForm'])->name('forgot.verifyCode');
 Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('forgot.resetPassword');
+
+
+
+//Gio hang
+Route::get('cart', [CartController::class, 'getCartDetails'])->name('cart');
+
+Route::get('/cart/item/delete/{cart_item_id}', [CartController::class, 'destroy'])
+    ->name('cartItem.Delete');
+
+Route::post('/cart/checkout/{cart_item_id}', [CartController::class, 'store'])
+    ->name('cart.checkout');
+
+Route::delete('/cart/checkout/{checkout_id}', [CartCheckoutController::class, 'destroy'])
+    ->name('cart.checkout.delete');
+
+Route::post('/check-voucher', [VoucherController::class, 'checkVoucher']);
+
+Route::post('/checkoutitem', [CheckOutController::class, 'checkout'])->name('checkoutitem');
 
 
 

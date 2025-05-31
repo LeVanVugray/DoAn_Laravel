@@ -33,7 +33,7 @@ class Product extends Model
     }
     public function manufacture()
     {
-        return $this->belongsTo(manufacture::class, 'manu_id', 'manu_id');
+        return $this->belongsTo(manufactures::class, 'manu_id', 'manu_id');
     }
     public function orderItems()
     {

@@ -3,24 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Order extends Model
 {
-    protected $primaryKey = 'order_id'; // Chỉ định khóa chính nếu nó khác 'id'
+    // Sử dụng khóa chính là 'order_id'
+    protected $primaryKey = 'order_id';
 
-    // Một đơn hàng thuộc về một người dùng
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(Users::class, 'user_id', 'user_id');
-    }
-    public function items()
+    // Các cột có thể gán giá trị hàng loạt
+    protected $fillable = [
+        'user_id',
+        'total_amount',
+        'status',
+        'shipped_at',
+        'payment',
+    ];
+
+   // Quan hệ một-nhiều với OrderItem
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'order_id', 'order_id');
     }
-    public function payment()
-{
-    return $this->hasOne(Payment::class, 'order_id', 'order_id');
-}
 
+    // Quan hệ một-nhiều với User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
 }

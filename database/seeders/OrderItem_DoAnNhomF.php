@@ -22,24 +22,21 @@ class OrderItem_DoAnNhomF extends Seeder
             [
                 'order_id'   => 1,    
                 'product_id' => 1,    // Sản phẩm #1 (Nike Air Max)
-                'size_id'    => 1,    // Size 36
-                'color_id'   => 1,    // Màu Đỏ
+               
                 'quantity'   => 2,
                 'unit_price' => 3590000.00,
             ],
             [
                 'order_id'   => 1,   
                 'product_id' => 3,    // Sản phẩm #3 (Puma Suede)
-                'size_id'    => 2,    // Size 37
-                'color_id'   => 2,    // Màu Xanh dương
+               
                 'quantity'   => 1,
                 'unit_price' => 2590000.00,
             ],
             [
                 'order_id'   => 2,    
                 'product_id' => 2,    // Sản phẩm #2 (Adidas Ultraboost)
-                'size_id'    => 5,    // Size 40
-                'color_id'   => 3,    // Màu Xanh lá
+              
                 'quantity'   => 1,
                 'unit_price' => 1800000.00,
             ],

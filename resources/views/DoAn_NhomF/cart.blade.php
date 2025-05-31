@@ -13,7 +13,7 @@
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
@@ -24,6 +24,7 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -41,12 +42,28 @@
             <div class="col-lg-6 text-center text-lg-right">
                 <div class="d-inline-flex align-items-center">
                     <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">My Account</button>
+                        <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">
+                            {{ Auth::check() ? Auth::user()->name : 'My Account' }}
+                        </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <button class="dropdown-item" type="button">Sign in</button>
-                            <button class="dropdown-item" type="button">Sign up</button>
+                            @if (Auth::check())
+                            @if(Auth::user()->role === 0)
+                            <a href="{{ url('/admin/indexadmin') }}" class="dropdown-item">Admin</a>
+                            @endif
+                            <a href="{{ route('logout') }}" class="dropdown-item" type="button"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                Log out
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                            @else
+                            <a href="{{ route('login') }}" class="dropdown-item" type="button">Sign in</a>
+                            <a href="{{ route('user.createUser') }}" class="dropdown-item" type="button">Sign up</a>
+                            @endif
                         </div>
                     </div>
+
                     <div class="btn-group mx-2">
                         <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-toggle="dropdown">USD</button>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -84,13 +101,13 @@
                 </a>
             </div>
             <div class="col-lg-4 col-6 text-left">
-                <form action="">
+                <form action="{{ route('search') }}" method="GET">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
+                        <input type="text" name="query" class="form-control" placeholder="Search for products">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -193,7 +210,13 @@
     <!-- Cart Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
+
+            <!-- Cart Items Section -->
             <div class="col-lg-8 table-responsive mb-5">
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-secondary pr-3">Cart Items</span>
+                </h5>
+
                 <table class="table table-light table-borderless table-hover text-center mb-0">
                     <thead class="thead-dark">
                         <tr>
@@ -201,241 +224,339 @@
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
+                            <th>Add to Checkout</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
                     <tbody class="align-middle">
-                        <tr>
-                            <td class="align-middle"><img src="{{ asset('img/product-1.jpg')}}" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
+                        @foreach($cartItems as $item)
+
+                        <tr data-cart-item-id="{{ $item->cart_item_id }}">
+                            <!-- Product info -->
                             <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                <img src="{{ asset($item->product->image) }}"
+                                    alt="{{ $item->product->name }}"
+                                    style="width:50px; height:auto; margin-right: 10px;">
+                                {{ $item->product->name }}
                             </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{{ asset('img/product-2.jpg')}}" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
+                            <!-- Price -->
+                            <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
+                                {{ $item->product ? number_format($item->product->price, 2) : '0'}}vnd
+                            </td>
+
+                            <form action="{{ route('cart.checkout', $item->cart_item_id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn chuyển sản phẩm này sang thanh toán?');">
+                                @csrf
+                                <!-- Quantity -->
+                                <td class="align-middle">
+                                    <div class="input-group quantity mx-auto" style="width: 100px;">
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-sm btn-primary btn-minus">
+                                                <i class="fa fa-minus"></i>
+                                            </button>
+                                        </div>
+
+                                        <input type="number" name="quantity-input" id="quantity-input" value="{{ $item->quantity }}" required
+                                            class="form-control form-control-sm bg-secondary border-0 text-center quantity-input">
+
+                                        <div class="input-group-btn">
+                                            <button type="button" class="btn btn-sm btn-primary btn-plus">
+                                                <i class="fa fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <!-- Total (price x quantity) -->
+                                <td class="align-middle total-cell">
+                                    {{ number_format(($item->product ? $item->product->price : 0) * $item->quantity, 2) }} vnd
+                                </td>
+
+                                <td class="align-middle">
+                                    <button type="submit" class="btn btn-primary">Add to Checkout</button>
+                                </td>
+                            </form>
                             <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                                <a href="{{ route('cartItem.Delete', $item->cart_item_id) }}"
+                                    class="btn btn-sm btn-danger">
+                                    <i class="fa fa-times"></i> Remove
+                                </a>
                             </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
                         </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{{ asset('img/product-3.jpg')}}" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{{ asset('img/product-4.jpg')}}" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="align-middle"><img src="{{ asset('img/product-5.jpg')}}" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input type="text" class="form-control form-control-sm bg-secondary border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-primary btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button></td>
-                        </tr>
+                        @endforeach
                     </tbody>
                 </table>
+                <!-- Phan Trang -->
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $cartItems->links("pagination::bootstrap-4") }}
+                </div>
+                <!-- Phan Trang/End -->
             </div>
+
             <div class="col-lg-4">
-                <form class="mb-30" action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control border-0 p-4" placeholder="Coupon Code">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary">Apply Coupon</button>
-                        </div>
-                    </div>
-                </form>
+
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Cart Summary</span></h5>
                 <div class="bg-light p-30 mb-5">
-                    <div class="border-bottom pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Subtotal</h6>
-                            <h6>$150</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5>Total</h5>
-                            <h5>$160</h5>
-                        </div>
-                        <button class="btn btn-block btn-primary font-weight-bold my-3 py-3">Proceed To Checkout</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Cart End -->
-
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
-        <div class="row px-xl-5 pt-5">
-            <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
-                <h5 class="text-secondary text-uppercase mb-4">Get In Touch</h5>
-                <p class="mb-4">No dolore ipsum accusam no lorem. Invidunt sed clita kasd clita et et dolor sed dolor. Rebum tempor no vero est magna amet no</p>
-                <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>123 Street, New York, USA</p>
-                <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>info@example.com</p>
-                <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+012 345 67890</p>
-            </div>
-            <div class="col-lg-8 col-md-12">
-                <div class="row">
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Quick Shop</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">My Account</h5>
-                        <div class="d-flex flex-column justify-content-start">
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Home</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Our Shop</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shop Detail</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Shopping Cart</a>
-                            <a class="text-secondary mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>Checkout</a>
-                            <a class="text-secondary" href="#"><i class="fa fa-angle-right mr-2"></i>Contact Us</a>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-5">
-                        <h5 class="text-secondary text-uppercase mb-4">Newsletter</h5>
-                        <p>Duo stet tempor ipsum sit amet magna ipsum tempor est</p>
-                        <form action="">
-                            <div class="input-group">
-                                <input type="text" class="form-control" placeholder="Your Email Address">
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary">Sign Up</button>
-                                </div>
+                    <form action="{{ route('checkoutitem') }}" method="POST">
+                        @csrf
+                        <!-- Nhập mã voucher -->
+                        <div class="input-group mb-3">
+                            <!-- Thêm name="voucher" để khi submit chỉ gửi mã voucher -->
+                            <input type="text" name="voucher" class="form-control border-0 p-4" id="voucherCode" placeholder="Coupon Code" value="{{ old('voucher', session('voucher') ?? '') }}">
+                            <div class="input-group-append">
+                                <!-- Nút Apply Coupon dùng để gọi AJAX (không submit form) -->
+                                <button type="button" class="btn btn-primary" onclick="checkVoucher()">Apply Coupon</button>
                             </div>
-                        </form>
-                        <h6 class="text-secondary text-uppercase mt-4 mb-3">Follow Us</h6>
-                        <div class="d-flex">
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-twitter"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary btn-square" href="#"><i class="fab fa-instagram"></i></a>
                         </div>
-                    </div>
+
+                        <!-- Phần hiển thị, không có thuộc tính name nên không gửi qua form -->
+                        <div class="border-bottom pb-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Tổng số tiền sản phẩm</h6>
+                                <h6 class="font-weight-medium" id="overallTotal">0 vnd</h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="font-weight-medium">
+                                    Giảm giá: <span id="voucherMessage" style="display:inline;"></span>
+                                </h6>
+                            </div>
+                        </div>
+
+                        <!-- (Nếu không cần) Bạn có thể bỏ qua phần input ẩn dưới đây vì chỉ voucher sẽ được submit -->
+                        <!-- <input type="hidden" id="discountAmount" value="0"> -->
+
+                        <!-- Nút chuyển qua trang thanh toán: khi bấm submit form sẽ chỉ gửi giá trị tại input voucher -->
+                        <div class="pt-2">
+                            <div class="d-flex justify-content-between mt-2">
+                                <h5 >Tổng số tiền</h5>
+                                <h6 class="font-weight-medium" id="finalTotalDisplay">0 vnd</h6>
+                            </div>
+                            <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" style="color: black;">
+                                <h5>Chuyển tới trang thanh toán</h5>
+                            </button>
+                        </div>
+                    </form>
+
                 </div>
             </div>
-        </div>
-        <div class="row border-top mx-xl-5 py-4" style="border-color: rgba(256, 256, 256, .1) !important;">
-            <div class="col-md-6 px-xl-0">
-                <p class="mb-md-0 text-center text-md-left text-secondary">
-                    &copy; <a class="text-primary" href="#">Domain</a>. All Rights Reserved. Designed
-                    by
-                    <a class="text-primary" href="https://htmlcodex.com">HTML Codex</a>
-                </p>
+
+            <div>
+                <button id="toggleCheckoutList" class="btn btn-primary mt-3">
+                    Xem sản phẩm đã chọn
+                </button>
+
+                <!-- Phần hiển thị danh sách sản phẩm đã thêm (mặc định ẩn đi) -->
+                <div id="checkoutList" class="mt-3" style="display: none; border: 1px solid #ddd; padding: 15px;">
+                    <h3>Sản phẩm để thanh toán</h3>
+                    <table class="table table-light table-borderless table-hover text-center mb-0">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Products</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody class="align-middle">
+                            @foreach($cartCheckouts as $item)
+                            <tr>
+                                <td class="align-middle">
+                                    {{ $item->product->name }}
+                                </td>
+                                <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
+                                    {{ $item->product ? number_format($item->product->price, 2) : '0' }} vnd
+                                </td>
+                                <td class="align-middle">
+                                    {{ $item->quantity }}
+                                </td>
+                                <td class="align-middle line-total-cell">
+                                    {{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0' }}vnd
+                                </td>
+                                <td class="align-middle">
+                                    <form action="{{ route('cart.checkout.delete', $item->getKey()) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn xóa mục này không?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">Remove</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            <div class="col-md-6 px-xl-0 text-center text-md-right">
-                <img class="img-fluid" src="{{ asset('img/payments.png')}}" alt="">
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
+
+            <!-- Cart End -->
+            <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+            <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+            <script src="{{ asset('lib/easing/easing.min.js')}}"></script>
+            <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
+            <script src="{{ asset('mail/jqBootstrapValidation.min.js')}}"></script>
+            <script src="{{ asset('mail/contact.js')}}"></script>
+            <script src="{{ asset('js/main.js')}}"></script>
 
 
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+            <script>
+                document.getElementById("toggleCheckoutList").addEventListener("click", function() {
+                    var checkoutList = document.getElementById("checkoutList");
+                    if (checkoutList.style.display === "none") {
+                        checkoutList.style.display = "block";
+                    } else {
+                        checkoutList.style.display = "none";
+                    }
+                });
+            </script>
+
+            <script>
+                $(document).ready(function() {
+                    // Khi giá trị số lượng thay đổi (sự kiện 'input' hoặc 'change')
+                    $('.quantity-input').on('input change', function() {
+                        // Lấy số lượng mới
+                        var newQuantity = parseFloat($(this).val());
+                        if (isNaN(newQuantity)) {
+                            newQuantity = 0;
+                        }
+                        // Tìm hàng <tr> chứa input này
+                        var row = $(this).closest('tr');
+                        // Lấy giá từ thuộc tính data-price của cell có class '.price-cell'
+                        var price = parseFloat(row.find('.price-cell').data('price'));
+                        if (isNaN(price)) {
+                            price = 0;
+                        }
+                        // Tính tổng mới
+                        var total = price * newQuantity;
+                        // Cập nhật cell có class '.total-cell'
+                        row.find('.total-cell').text('$' + total.toFixed(2));
+                    });
+                });
+            </script>
+
+            <script>
+                // Tăng số lượng
+                document.querySelectorAll('.btn-plus').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const row = btn.closest('tr');
+                        const qtyInput = row.querySelector('.quantity-input');
+                        let currentQty = parseInt(qtyInput.value) || 0;
+                        qtyInput.value = currentQty;
+                        // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                        qtyInput.dispatchEvent(new Event('input'));
+                    });
+                });
+
+                // Giảm số lượng
+                document.querySelectorAll('.btn-minus').forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        const row = btn.closest('tr');
+                        const qtyInput = row.querySelector('.quantity-input');
+                        let currentQty = parseInt(qtyInput.value) || 0;
+                        if (currentQty >= 1) {
+                            qtyInput.value = currentQty;
+                            // Gợi ý: kích hoạt sự kiện 'input' để cập nhật total ngay sau khi thay đổi số lượng
+                            qtyInput.dispatchEvent(new Event('input'));
+                        }
+                    });
+                });
+            </script>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    let overallTotal = 0;
+                    // Lấy tất cả các ô của cột "Total"
+                    const totalCells = document.querySelectorAll('.line-total-cell');
+                    totalCells.forEach(function(cell) {
+                        // Lấy nội dung của ô, ví dụ "$3.00" hoặc "$0"
+                        let text = cell.textContent.trim();
+                        // Loại bỏ các ký tự không phải số và dấu chấm, ví dụ:
+                        // "$3.00" -> "3.00", "12000 vnd" -> "12000"
+                        text = text.replace(/[^0-9.]/g, '');
+                        const lineTotal = parseFloat(text) || 0;
+                        overallTotal += lineTotal;
+                    });
+                    // Cập nhật tổng số tiền vào phần tử có id "overallTotal"
+                    document.getElementById('overallTotal').textContent = overallTotal + " vnd";
+                });
+            </script>
 
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('lib/easing/easing.min.js')}}"></script>
-    <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js')}}"></script>
+            <script>
+                function checkVoucher() {
+                    // Lấy mã voucher từ input
+                    let code = document.getElementById('voucherCode').value;
 
-    <!-- Contact Javascript File -->
-    <script src="{{ asset('mail/jqBootstrapValidation.min.js')}}"></script>
-    <script src="{{ asset('mail/contact.js')}}"></script>
+                    // Lấy giá trị tổng đơn hàng từ phần tử có id "overallTotal"
+                    // Ví dụ: nếu text là "12000 vnd"
+                    let overallTotalText = document.getElementById('overallTotal').innerText;
+                    // Loại bỏ tất cả các ký tự không phải số, ví dụ "12000 vnd" -> "12000"
+                    let overallTotal = parseFloat(overallTotalText.replace(/[^0-9]/g, ''));
 
-    <!-- Template Javascript -->
-    <script src="{{ asset('js/main.js')}}"></script>
+                    fetch('/check-voucher', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                code: code,
+                                order_total: overallTotal
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Lấy phần tử ghi thông báo voucher
+                            let voucherMessageEl = document.getElementById('voucherMessage');
+                            // Nếu thành công, hiển thị thông báo kèm số tiền giảm
+                            if (data.success) {
+                                voucherMessageEl.innerText = data.discount_amount + " VND";
+
+                            } else {
+                                voucherMessageEl.innerText = data.error;
+                            }
+                            updateFinalTotal();
+                        })
+                        .catch(error => console.error('Lỗi:', error));
+                }
+            </script>
+
+            <script>
+                // Hàm tính tổng số tiền của sản phẩm dựa vào các ô có class "line-total-cell"
+                function calculateProductTotal() {
+                    let overallTotal = 0;
+                    const totalCells = document.querySelectorAll('.line-total-cell');
+                    totalCells.forEach(function(cell) {
+                        let text = cell.textContent.trim();
+                        // Loại bỏ các ký tự không phải số và dấu chấm (vd: "$", "vnd", dấu phẩy,...)
+                        text = text.replace(/[^0-9.]/g, '');
+                        const lineTotal = parseFloat(text) || 0;
+                        overallTotal += lineTotal;
+                    });
+                    // Cập nhật hiển thị tổng tiền sản phẩm vào phần tử có id "overallTotal"
+                    document.getElementById('overallTotal').textContent = overallTotal + " vnd";
+                    return overallTotal;
+                }
+
+                // Hàm cập nhật tổng số tiền sau khi trừ giảm giá
+                function updateFinalTotal() {
+                    // Tính tổng tiền các sản phẩm
+                    const productTotal = calculateProductTotal();
+                    // Lấy giá trị giảm giá (đã được cập nhật sau khi áp dụng voucher)
+                    const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
+                    // Tính tổng số tiền sau giảm giá
+                    let finalTotal = productTotal - discount;
+                    if (finalTotal < 0) finalTotal = 0;
+                    // Cập nhật vào phần tử hiển thị tổng với id "finalTotalDisplay"
+                    document.getElementById('finalTotalDisplay').textContent = "Tổng số tiền: " + finalTotal.toFixed(2) + " vnd";
+                }
+
+                // Chạy hàm khi trang được tải
+                document.addEventListener("DOMContentLoaded", function() {
+                    updateFinalTotal();
+                });
+            </script>
+
+
+
 </body>
 
 </html>

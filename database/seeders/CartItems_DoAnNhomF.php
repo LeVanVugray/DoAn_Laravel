@@ -21,8 +21,6 @@ class CartItems_DoAnNhomF extends Seeder
             [
                 'cart_id' => 1,
                 'product_id' => 1,
-                'size_id' => 1,
-                'color_id' => 1,
                 'quantity' => 2,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -30,8 +28,6 @@ class CartItems_DoAnNhomF extends Seeder
             [
                 'cart_id' => 1,
                 'product_id' => 2,
-                'size_id' => 2,
-                'color_id' => 3,
                 'quantity' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
@@ -39,8 +35,6 @@ class CartItems_DoAnNhomF extends Seeder
             [
                 'cart_id' => 2,
                 'product_id' => 3,
-                'size_id' => 1,
-                'color_id' => 2,
                 'quantity' => 1,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
