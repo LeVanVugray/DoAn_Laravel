@@ -93,7 +93,7 @@ class CheckOutController extends Controller
             ->get();
 
         if ($cartCheckouts->isEmpty()) {
-            return redirect()->back()->with('error', 'Giỏ hàng trống, không thể đặt đơn!');
+            return redirect()->route('cart')->with('success', 'Khong the dat don');
         }
 
         // 1. Tính tổng số tiền của tất cả sản phẩm trong giỏ hàng
@@ -164,7 +164,7 @@ class CheckOutController extends Controller
             DB::commit();
 
             // Redirect hoặc trả về thông báo thành công
-            return redirect()->route('order.success')->with('success', 'Đơn hàng đã được tạo thành công!');
+            return redirect()->route('cart')->with('success', 'Đơn hàng đã được tạo thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
             // Ghi log lỗi nếu cần

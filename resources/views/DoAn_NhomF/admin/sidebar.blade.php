@@ -32,5 +32,10 @@
                 <i class="icon-th-list"></i> <span>Products</span>
             </a>
         </li>
+        <li>
+            <a href="{{ route('admin.productadmin') }}">
+                <i class="icon-th-list"></i> <span>Orders</span>
+            </a>
+        </li>
     </ul>
 </div>

@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
                     'name' => 'user' .$i,
                     'email' => "admin{$i}@gmail.com",
                     'email_verified_at' => now(),
-                    'password' => Hash::make('123456'),
+                    'password' => Hash::make('1!pPabc'),
                     'remember_token' => Str::random(10),
                     'created_at' => now(),
                     'updated_at' => now(),

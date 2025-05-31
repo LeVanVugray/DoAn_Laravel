@@ -190,104 +190,119 @@
 
 
     <!-- Checkout Start -->
-    <div class="container-fluid">
-        <div class="row px-xl-5">
-            <div class="col-lg-8">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Billing Address</span></h5>
-                <div class="bg-light p-30 mb-5">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label>Name</label>
-                            <input class="form-control" type="text" placeholder="vd: John" name='name' value="{{Auth::user()->name}}">
-                        </div>
-
-                        <div class="col-md-6 form-group">
-                            <label>E-mail</label>
-                            <input class="form-control" type="text" placeholder="example@email.com" value="{{Auth::user()->email}}">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Mobile No</label>
-                            <input class="form-control" type="text" placeholder="+123 456 789" value="{{Auth::user()->phone}}">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label>Address Line</label>
-                            <input class="form-control" type="text" placeholder="123 Street" value="{{Auth::user()->address}}">
+    <form action="{{ route('ordercreate') }}" method="POST">
+        @csrf
+        <div class="container-fluid">
+            <div class="row px-xl-5">
+                <!-- Billing Address -->
+                <div class="col-lg-8">
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Billing Address</span>
+                    </h5>
+                    <div class="bg-light p-30 mb-5">
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Name</label>
+                                <input class="form-control" type="text" placeholder="vd: John" name="name" value="{{ Auth::user()->name }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>E-mail</label>
+                                <input class="form-control" type="text" placeholder="example@email.com" name="email" value="{{ Auth::user()->email }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Mobile No</label>
+                                <input class="form-control" type="text" placeholder="+123 456 789" name="phone" value="{{ Auth::user()->phone }}">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Address Line</label>
+                                <input class="form-control" type="text" placeholder="123 Street" name="address" value="{{ Auth::user()->address }}">
+                            </div>
+                            <!-- Field nhập voucher (nếu có) -->
+                            <div class="col-md-6 form-group">
+                                <label>Voucher Code</label>
+                                <input class="form-control" type="text" placeholder="Enter voucher code" name="voucher">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Order Total</span></h5>
-                <div class="bg-light p-30 mb-5">
+                <!-- Order Total & Payment -->
+                <div class="col-lg-4">
+                    <h5 class="section-title position-relative text-uppercase mb-3">
+                        <span class="bg-secondary pr-3">Order Total</span>
+                    </h5>
+                    <div class="bg-light p-30 mb-5">
+                        <h3>Sản phẩm để thanh toán</h3>
+                        <table class="table table-light table-borderless table-hover text-center mb-0">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Products</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody class="align-middle">
+                                @foreach($cartCheckouts as $item)
+                                <tr>
+                                    <td class="align-middle">
+                                        {{ $item->product->name }}
+                                    </td>
+                                    <td class="align-middle line-total-cell">
+                                        {{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0.00' }}
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
 
-                    <h3>Sản phẩm để thanh toán</h3>
-                    <table class="table table-light table-borderless table-hover text-center mb-0">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>Products</th>
-                                <th>Total</th>
-                            </tr>
-                        </thead>
-                        <tbody class="align-middle">
-                            @foreach($cartCheckouts as $item)
-                            <tr>
-                                <td class="align-middle">
-                                    {{ $item->product->name }}
-                                </td>
-
-                                <td class="align-middle line-total-cell">
-                                    {{ $item->product ? number_format($item->product->price * $item->quantity, 2) : '0' }}
-                                </td>
-
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-
-                    <div class="border-bottom pt-3 pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Tổng tiền sản phẩm</h6>
-                            <h6>{{$totalProductPrice}}</h6>
+                        <!-- Hiển thị tóm tắt đơn hàng (chỉ để người dùng xem) -->
+                        <div class="border-bottom pt-3 pb-2">
+                            <div class="d-flex justify-content-between mb-3">
+                                <h6>Tổng tiền sản phẩm</h6>
+                                <h6>{{ number_format($totalProductPrice, 2) }} vnd</h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <h6 class="font-weight-medium">Giảm giá</h6>
+                                <h6 class="font-weight-medium">{{ number_format($discountAmount, 2) }} vnd</h6>
+                            </div>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Giảm giá</h6>
-                            <h6 class="font-weight-medium">{{$discountAmount}}</h6>
+                        <div class="pt-2">
+                            <div class="d-flex justify-content-between mt-2">
+                                <h5>Tổng cộng</h5>
+                                <h5>{{ number_format($finalTotal, 2) }} vnd</h5>
+                            </div>
                         </div>
                     </div>
-                    <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5>Tổng cộng</h5>
-                            <h5>{{$finalTotal}}</h5>
-                        </div>
-                    </div>
-                </div>\
-                <div class="mb-5">
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-secondary pr-3">Payment</span></h5>
-                    <div class="bg-light p-30">
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                                <label class="custom-control-label" for="paypal">Paypal</label>
+                    <!-- Payment Section -->
+                    <div class="mb-5">
+                        <h5 class="section-title position-relative text-uppercase mb-3">
+                            <span class="bg-secondary pr-3">Payment</span>
+                        </h5>
+                        <div class="bg-light p-30">
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="paypal" value="paypal" required>
+                                    <label class="custom-control-label" for="paypal">Paypal</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="directcheck">
-                                <label class="custom-control-label" for="directcheck">Direct Check</label>
+                            <div class="form-group">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="directcheck" value="direct" required>
+                                    <label class="custom-control-label" for="directcheck">Trực tiếp</label>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group mb-4">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
-                                <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
+                            <div class="form-group mb-4">
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" name="payment" id="banktransfer" value="momo" required>
+                                    <label class="custom-control-label" for="banktransfer">Momo</label>
+                                </div>
                             </div>
+                            <button class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
                         </div>
-                        <button class="btn btn-block btn-primary font-weight-bold py-3">Place Order</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
+
     <!-- Checkout End -->
 
 

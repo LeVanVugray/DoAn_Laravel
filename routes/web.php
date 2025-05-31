@@ -14,8 +14,6 @@ use App\Http\Controllers\CartCheckoutController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\VoucherController;
 
-
-
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -65,6 +63,22 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('from_update_voucher', [AdminController::class, 'post_from_update_voucher'])->name('post_from_update_voucher');
 
     Route::get('deleteVoucher', [AdminController::class, 'deleteVoucher'])->name('deleteVoucher');
+
+
+
+
+
+     Route::get('orders', [OrderController::class, 'index'])
+          ->name('orders.index');
+
+     Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
+          ->name('orders.showShippedOrder');
+
+     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
+          ->name('orders.confirm');
+
+     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+          ->name('orders.cancel');
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -182,6 +196,8 @@ Route::delete('/cart/checkout/{checkout_id}', [CartCheckoutController::class, 'd
 Route::post('/check-voucher', [VoucherController::class, 'checkVoucher']);
 
 Route::post('/checkoutitem', [CheckOutController::class, 'checkout'])->name('checkoutitem');
+
+Route::post('/ordercreate', [CheckOutController::class, 'placeOrder'])->name('ordercreate');
 
 
 
