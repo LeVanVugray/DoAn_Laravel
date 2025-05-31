@@ -35,7 +35,7 @@
                          
                             @csrf
                             <input type="hidden" name="updated_at" value="{{ $user->updated_at ??  '' }}">
-                            <input type="hidden" name="last_valid_user_id" value="{{ $user->user_id ??  ''}}">
+                            <input type="hidden" name="user_id" value="{{ $user->user_id ??  ''}}">
                             <div class="control-group">
                                 <label class="control-label">Username </label>
                                 <div class="controls">

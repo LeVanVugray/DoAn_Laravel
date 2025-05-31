@@ -475,108 +475,92 @@ class AdminController extends Controller
     }
     public function post_from_update_user(Request $request)
     {
-    $input = $request->all();
-    $user_id = $input['user_id'] ?? null;
-    $fallback_id = $request->query('last_valid_user_id'); // lấy từ form trước nếu có
-    $user_idd = $request->query('user_id');
-
-    // Kiểm tra user_id hợp lệ
-    if (!ctype_digit((string)$user_id) || (int)$user_id < 1) {
-        return redirect()->route('admin.from_update_user', ['user_id' => null])
-            ->withErrors(['error' => 'ID không hợp lệ, đã chuyển về trang đầu.'])
-            ->withInput(['user_id' => $user_id]);
-    }
-
-    // Tìm user theo ID
-    $user = Users::find((int)$user_id);
-    $users = Users::find((int)$user_idd);
-    $usercount = Users::count(); 
-    if ($users) {
-        return view('admin.update_user', compact('user'));
-    } else {
-        if ($fallback_id) {
-            return redirect()->route('from_update_user', ['user_id' => $fallback_id])
-                ->withErrors(['msg' => 'ID người dùng không hợp lệ. Đã quay lại ID trước đó.']);
-        }
-
-        return redirect()->route('usersadmin')->withErrors(['msg' => 'Người dùng không tồn tại.']);
-    }
+        $input = $request->all();
+        // Tìm user theo ID
+        $user = Users::find($input['user_id']);
+        
+        // Kiểm tra xung đột cập nhật bằng updated_at
+        if (!$user) {
+            return redirect()->route('usersadmin')->withErrors([
+                'msg' => 'Không có Người Này Để update Hãy Load Lại trang'
+            ])
+                ->withInput(); // Để giữ lại input cũ;
+        } 
+        if ($user->updated_at->toDateTimeString() !== $input['updated_at']) {
+            $changedFields = [];
+            if ($user->name !== $input['name']) $changedFields[] = 'tên người dùng';
+            if ($user->email !== $input['email']) $changedFields[] = 'email';
+            if ($user->phone !== $input['phone']) $changedFields[] = 'số điện thoại';
+            if ($user->address !== $input['address']) $changedFields[] = 'địa chỉ';
+            if ($user->role != $input['role']) $changedFields[] = 'quyền';
+            // Không kiểm tra password vì không thể so sánh hash
     
-    if (!$user) {
-        return redirect()->route('admin.from_update_user')
-            ->withErrors(['error' => 'Người dùng không tồn tại.'])
-            ->withInput(['user_id' => $user_id]);
-    }
-
-    // Kiểm tra xung đột cập nhật bằng updated_at
-    if ($user->updated_at->toDateTimeString() !== $input['updated_at']) {
-        $changedFields = [];
-        if ($user->name !== $input['name']) $changedFields[] = 'tên người dùng';
-        if ($user->email !== $input['email']) $changedFields[] = 'email';
-        if ($user->phone !== $input['phone']) $changedFields[] = 'số điện thoại';
-        if ($user->address !== $input['address']) $changedFields[] = 'địa chỉ';
-        if ($user->role != $input['role']) $changedFields[] = 'quyền';
-
-        $changedList = implode(', ', $changedFields);
-        return back()->withErrors([
-            'msg' => 'Dữ liệu đã bị thay đổi ở các mục: ' . $changedList . '. Vui lòng tải lại trang và thử lại.'
-        ])->withInput();
-    }
-
-    // Validate dữ liệu đầu vào
-    $request->validate([
+            $changedList = implode(', ', $changedFields);
+            return back()->withErrors([
+                'msg' => 'Dữ liệu đã bị thay đổi ở các mục: ' . $changedList . '. Vui lòng tải lại trang và thử lại.'
+            ])
+            ->withInput(); // Để giữ lại input cũ
+            ;
+        }
+        // Validate dữ liệu đầu vào
+        $request->validate([
         'name' => ['required', 'string', 'max:255', 'regex:/^[\pL\pN\s]+$/u'],
         'email' => [
             'required',
             'email',
             'regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/',
             'max:100',
-            Rule::unique('user', 'email')->ignore($user->user_id, 'user_id'),
+            Rule::unique('user', 'email')->ignore($input['user_id'], 'user_id')
         ],
         'phone' => ['required', 'digits:11'],
         'address' => ['required', 'string', 'max:255'],
-        'password' => ['required', 'string', 'min:6', 'max:100'],
+        'password' => [
+            'required',
+            'string',
+            'min:6',
+            'max:100',
+        ],
         'role' => ['required', 'in:0,1'],
     ], [
         'name.required' => 'Tên người dùng là bắt buộc.',
-        'name.regex' => 'Tên người dùng chỉ được chứa chữ cái, số và khoảng trắng.',
+        'name.regex' => 'Tên người dùng chỉ được chứa chữ cái và khoảng trắng và s.',
         'name.max' => 'Tên người dùng không được vượt quá 255 ký tự.',
 
-            'email.required' => 'Email là bắt buộc.',
-            'email.email' => 'Email không hợp lệ.',
-            'email.regex' => 'Email phải có định dạng @gmail.com.',
-            'email.unique' => 'Email đã tồn tại.',
-            'email.max' => 'Email không được dài quá 100 ký tự.',
+        'email.required' => 'Email là bắt buộc.',
+        'email.email' => 'Email không hợp lệ.',
+        'email.regex' => 'Email phải có định dạng @gmail.com.',
+        'email.unique' => 'Email đã tồn tại.',
+        'email.max' => 'Email không được dài quá 100 ký tự.',
 
-            'phone.required' => 'Số điện thoại là bắt buộc.',
-            'phone.digits' => 'Số điện thoại phải đúng 11 chữ số.',
+        'phone.required' => 'Số điện thoại là bắt buộc.',
+        'phone.digits' => 'Số điện thoại phải đúng 11 chữ số.',
 
-            'address.required' => 'Địa chỉ là bắt buộc.',
-            'address.max' => 'Địa chỉ không được dài quá 255 ký tự.',
+        'address.required' => 'Địa chỉ là bắt buộc.',
+        'address.max' => 'Địa chỉ không được dài quá 255 ký tự.',
 
-            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
-            'password.max' => 'Mật khẩu không được vượt quá 100 ký tự.',
+        'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+        'password.max' => 'Mật khẩu không được vượt quá 100 ký tự.',
+        'password.regex' => 'Mật khẩu không được chứa khoảng trắng.',
 
-            'role.required' => 'Vui lòng chọn quyền.',
-            'role.in' => 'Giá trị quyền không hợp lệ.',
-        ]);
+        'role.required' => 'Vui lòng chọn quyền.',
+        'role.in' => 'Giá trị quyền không hợp lệ.',
+    ]);
+        
+        // Cập nhật dữ liệu
+        $user->name = $input['name'];
+        $user->email = $input['email'];
+        $user->phone = $input['phone'] ?? null;
+        $user->address = $input['address'] ?? null;
+        $user->role = $input['role'];
 
+        if (!empty($input['password'])) {
+            $user->password = bcrypt($input['password']);
+        }
 
+        $user->save();
 
-    // Cập nhật dữ liệu
-    $user->name = $input['name'];
-    $user->email = $input['email'];
-    $user->phone = $input['phone'] ?? null;
-    $user->address = $input['address'] ?? null;
-    $user->role = $input['role'];
+        return redirect('usersadmin')->with('success', 'Cập nhật người dùng thành công.');
 
-    if (!empty($input['password'])) {
-        $user->password = bcrypt($input['password']);
-    }
-
-    $user->save();
-
-    return redirect('usersadmin')->with('success', 'Cập nhật người dùng thành công.');
 }
 
     public function post_from_add_user(Request $request){
