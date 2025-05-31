@@ -13,6 +13,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartCheckoutController;
 use App\Http\Controllers\CheckOutController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,17 +69,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 
 
-     Route::get('orders', [OrderController::class, 'index'])
-          ->name('orders.index');
+    Route::get('orders', [OrderController::class, 'index'])
+        ->name('orders.index');
 
-     Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
-          ->name('orders.showShippedOrder');
+    Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
+        ->name('orders.showShippedOrder');
 
-     Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
-          ->name('orders.confirm');
+    Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
+        ->name('orders.confirm');
 
-     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
-          ->name('orders.cancel');
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+        ->name('orders.cancel');
 });
 // Admin
 Route::get('indexadmin', [AdminController::class, 'indexadmin'])->name('indexadmin');
@@ -199,7 +200,17 @@ Route::post('/checkoutitem', [CheckOutController::class, 'checkout'])->name('che
 
 Route::post('/ordercreate', [CheckOutController::class, 'placeOrder'])->name('ordercreate');
 
+Route::get('orders', [OrderController::class, 'index'])
+    ->name('orders.index');
 
+Route::get('shippedorder', [OrderController::class, 'showShippedOrder'])
+    ->name('orders.showShippedOrder');
+
+Route::post('/orders/{order}/confirm', [OrderController::class, 'confirm'])
+    ->name('orders.confirm');
+
+Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])
+    ->name('orders.cancel');
 
 
 Route::get('/', function () {

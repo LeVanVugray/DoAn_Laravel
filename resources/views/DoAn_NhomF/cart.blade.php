@@ -233,7 +233,8 @@
                         <tr data-cart-item-id="{{ $item->cart_item_id }}">
                             <!-- Product info -->
                             <td class="align-middle">
-                                <img src="{{ asset($item->product->image) }}"
+                                <img
+                                    src="{{ asset('ANhDoAn/' . $item->product->image) }}"
                                     alt="{{ $item->product->name }}"
                                     style="width:50px; height:auto; margin-right: 10px;">
                                 {{ $item->product->name }}
@@ -325,7 +326,7 @@
                         <!-- Nút chuyển qua trang thanh toán: khi bấm submit form sẽ chỉ gửi giá trị tại input voucher -->
                         <div class="pt-2">
                             <div class="d-flex justify-content-between mt-2">
-                                <h5 >Tổng số tiền</h5>
+                                <h5>Tổng số tiền</h5>
                                 <h6 class="font-weight-medium" id="finalTotalDisplay">0 vnd</h6>
                             </div>
                             <button type="submit" class="btn btn-block btn-primary font-weight-bold my-3 py-3" style="color: black;">
@@ -359,6 +360,10 @@
                             @foreach($cartCheckouts as $item)
                             <tr>
                                 <td class="align-middle">
+                                    <img
+                                        src="{{ asset('ANhDoAn/' . $item->product->image) }}"
+                                        alt="{{ $item->product->name }}"
+                                        style="width:50px; height:auto; margin-right: 10px;">
                                     {{ $item->product->name }}
                                 </td>
                                 <td class="align-middle price-cell" data-price="{{ $item->product ? $item->product->price : 0 }}">
@@ -508,11 +513,11 @@
                             // Nếu thành công, hiển thị thông báo kèm số tiền giảm
                             if (data.success) {
                                 voucherMessageEl.innerText = data.discount_amount + " VND";
-
+                                updateFinalTotal();
                             } else {
                                 voucherMessageEl.innerText = data.error;
                             }
-                            updateFinalTotal();
+
                         })
                         .catch(error => console.error('Lỗi:', error));
                 }
@@ -543,9 +548,10 @@
                     const discount = parseFloat(document.getElementById('discountAmount').value) || 0;
                     // Tính tổng số tiền sau giảm giá
                     let finalTotal = productTotal - discount;
+                    console.log("JS is running");
                     if (finalTotal < 0) finalTotal = 0;
                     // Cập nhật vào phần tử hiển thị tổng với id "finalTotalDisplay"
-                    document.getElementById('finalTotalDisplay').textContent = "Tổng số tiền: " + finalTotal.toFixed(2) + " vnd";
+                    document.getElementById('finalTotalDisplay').textContent = finalTotal.toFixed(2) + " vnd";
                 }
 
                 // Chạy hàm khi trang được tải

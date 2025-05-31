@@ -81,7 +81,7 @@ class OrderController extends Controller
         $orders = Order::where('status', 3)
             ->with(['orderItems.product'])
             ->orderBy('order_id', 'desc')
-            ->paginate(1);
+            ->paginate(5);
 
         // Trả về view 'orders.status3' với dữ liệu $orders
         return view('DoAN_nhomF.admin.shippedorder', compact('orders'));

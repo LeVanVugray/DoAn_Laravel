@@ -33,7 +33,7 @@
             </a>
         </li>
         <li>
-            <a href="{{ route('admin.productadmin') }}">
+            <a href="{{ route('orders.index') }}">
                 <i class="icon-th-list"></i> <span>Orders</span>
             </a>
         </li>
