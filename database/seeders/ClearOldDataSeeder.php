@@ -15,7 +15,6 @@ class ClearOldDataSeeder extends Seeder
         DB::table('products')->delete();
         DB::table('categories')->delete();
         DB::table('manufactures')->delete();
-        DB::table('colors')->delete();
         DB::table('users')->delete();
         DB::table('user')->delete();
         DB::table('roles')->delete();
